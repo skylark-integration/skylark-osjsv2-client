@@ -1,0 +1,17 @@
+{
+  "name": "osjs-apps-processviewer",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "sbundle build ."
+  },
+  "skylarkjs" : {
+    "build" : {
+      "prepare" : {
+        "texttojs" : ["html","json","css"],
+        "jsxtojs" : false,
+        "es6toamd" : true,
+        "cjstoamd" : false
+      }
+    }
+  }  
+}

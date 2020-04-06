@@ -1,0 +1,9 @@
+/**
+ * skylark-osjsv2-client - A version of osjs-client that ported to running on skylarkjs
+ * @author Hudaokeji, Inc.
+ * @version v0.9.0
+ * @link https://github.com/skylark-integration/skylark-osjsv2-client/
+ * @license MIT
+ */
+define(["../core/dialog","../vfs/fs","../core/locales","../core/config"],function(e,t,s,i){"use strict";return class extends e{constructor(e,t){(e=Object.assign({},{dest:i.getDefaultPath(),progress:{},file:null},e)).destination&&(e.dest=e.destination),e.dest||(e.dest=i.getDefaultPath()),super("FileUploadDialog",{title:e.title||s._("DIALOG_UPLOAD_TITLE"),icon:"actions/document-new.png",width:400,height:100},e,t)}init(){const e=super.init(...arguments),t=this._find("Message"),n=i.getConfig("VFS.MaxUploadSize");t.set("value",s._("DIALOG_UPLOAD_DESC",this.args.dest,n),!0);const o=this._find("File");return this.args.file?this.setFile(this.args.file,o):o.on("change",e=>{this.setFile(e.detail,o)}),e}setFile(i,n){let o;const l=(e,t)=>{OSjs.error(s._("DIALOG_UPLOAD_FAILED"),s._("DIALOG_UPLOAD_FAILED_MSG"),e||s._("DIALOG_UPLOAD_FAILED_UNKNOWN")),o._close(!0),this.onClose(t,"cancel")};if(i){let a=0;a=i.size>1048576?(Math.round(100*i.size/1048576)/100).toString()+"MB":(Math.round(100*i.size/1024)/100).toString()+"KB",n&&n.set("disabled",!0),this._find("ButtonCancel").set("disabled",!0);const r=s._("DIALOG_UPLOAD_MSG_FMT",i.name,i.type,a,this.args.dest);o=e.create("FileProgress",{message:r,dest:this.args.dest,filename:i.name,mime:i.type,size:a},(e,t)=>{},this),t.upload({files:[i],destination:this.args.dest},{onprogress:e=>{if(e.lengthComputable){const t=Math.round(100*e.loaded/e.total);o.setProgress(t)}}}).then(()=>(o._close(!0),this.onClose(null,"ok",i))).catch(l),setTimeout(()=>{o&&o._focus()},100)}}onClose(e,t,s){s=s||null,this.closeCallback(e,t,s)}}});
+//# sourceMappingURL=../sourcemaps/dialogs/fileupload.js.map

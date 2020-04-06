@@ -1,0 +1,9 @@
+/**
+ * osjs-apps-settings - 
+ * @author 
+ * @version v1.0.0
+ * @link 
+ * @license 
+ */
+define(["./locales"],function(e){"use strict";const n=OSjs.require("core/settings-manager"),t=OSjs.require("gui/notification"),a=OSjs.require("core/locales"),i=OSjs.require("core/dialog"),c=OSjs.require("utils/misc"),l=a.createLocalizer(e);return{group:"system",name:"Search",label:"LBL_SEARCH",icon:"actions/system-search.png",init:function(){},update:function(e,t,a,i){const l=c.cloneObject(n.get("SearchEngine")||{});e._find("SearchEnableApplications").set("value",!0===l.applications),e._find("SearchEnableFiles").set("value",!0===l.files);const s=e._find("SearchPaths").clear();s.set("columns",[{label:"Path"}]);const r=(l.paths||[]).map(function(e){return{value:e,id:e,columns:[{label:e}]}});s.add(r)},render:function(e,n,t,a,c){e._find("SearchAdd").on("click",function(){e._toggleDisabled(!0),i.create("File",{select:"dir",mfilter:[function(e){return e.option("searchable")&&e.mounted()}]},function(n,t,a){e._toggleDisabled(!1),"ok"===t&&a&&e._find("SearchPaths").add([{value:a.path,id:a.path,columns:[{label:a.path}]}])},e)}),e._find("SearchRemove").on("click",function(){const n=e._find("SearchPaths");(n.get("value")||[]).forEach(function(e){n.remove(e.index)})})},save:function(e,a,i,c){const s=[];e._find("SearchPaths").get("entry",null,null,!0).sort().forEach(function(e){const n=function(e){let n=!1;return s.forEach(function(t){n||(n=e.substr(0,t.length)===t)}),n}(e);n&&t.create({title:l("LBL_SEARCH"),message:l("Search path '{0}' is already handled by another entry",e)}),s.length&&n||s.push(e)});const r={applications:e._find("SearchEnableApplications").get("value"),files:e._find("SearchEnableFiles").get("value"),paths:s};n.instance("SearchEngine").set(null,r,!1,!1)}}});
+//# sourceMappingURL=sourcemaps/module-search.js.map

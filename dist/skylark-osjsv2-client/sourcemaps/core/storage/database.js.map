@@ -1,0 +1,1 @@
+{"version":3,"sources":["core/storage/database.js"],"names":["define","Storage"],"mappings":";;;;;;;AAAAA,QACC,cACE,SAAUC,GACT,aACA,qBAAqCA","file":"../../../core/storage/database.js","sourcesContent":["define([\n\t'../storage'\n], function (Storage) {\n    'use strict';\n    return class DatabaseStorage extends Storage {\n    };\n});"]}

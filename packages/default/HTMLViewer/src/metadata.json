@@ -1,0 +1,19 @@
+{
+  "className":  "ApplicationHTMLViewer",
+  "name":       "HTML Viewer",
+  "mime":       null,
+  "icon":       "mimetypes/text-html.png",
+  "mime": [
+    "text\\/html"
+  ],
+  "category": "utilities",
+  "main": {
+    "webpack": ["main.js"]
+  },
+  "preload":    [
+    {"src": "main.js", "type": "javascript"}
+  ]
+}
+
+
+

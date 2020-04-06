@@ -1,0 +1,9 @@
+/**
+ * skylark-osjsv2-client - A version of osjs-client that ported to running on skylarkjs
+ * @author Hudaokeji, Inc.
+ * @version v0.9.0
+ * @link https://github.com/skylark-integration/skylark-osjsv2-client/
+ * @license MIT
+ */
+define(function(){"use strict";return{format:function(t){const n=Array.prototype.slice.call(arguments,1);return t.replace(/\{(\d+)\}/g,function(t,r){return r in n?n[r]:t})},parseurl:function(t,n){n=n||{},t.match(/^(\w+\:)\/\//)||(t="//"+t);const r=t.split(/^(\w+\:)?\/\//),e=(()=>{const t=r[2].replace(/^\/\//,"").split("/");return{proto:(n.protocol||r[1]||window.location.protocol||"").replace(/\:$/,""),host:n.host||t.shift(),path:n.path||"/"+t.join("/")}})();return{protocol:e.proto,host:e.host,path:e.path,url:function(){const t=[e.proto,"://"];if(n.username){const r=String(n.username)+":"+String(n.password);t.push(r),t.push("@")}return t.push(e.host),t.push(e.path),t.join("")}()}},urlparams:function(t,n){return t.slice(t.indexOf(n?"#":"?")+1).split("&").reduce((t,n)=>{let[r,e]=n.split("=");return Object.assign(t,{[r]:decodeURIComponent(e)})},{})},argumentDefaults:function(t,n,r){return t=t||{},Object.keys(n).forEach(r=>{"boolean"==typeof n[r]||"number"==typeof n[r]?void 0!==t[r]&&null!==t[r]||(t[r]=n[r]):t[r]=t[r]||n[r]}),t},mergeObject:function t(n,r,e){e=e||{};for(let o in r)if(r.hasOwnProperty(o))try{if(!1===e.overwrite&&n.hasOwnProperty(o))continue;r[o].constructor===Object?n[o]=t(n[o],r[o]):n[o]=r[o]}catch(t){n[o]=r[o]}return n},cloneObject:function(t,n){return n?function t(n){if("object"!=typeof n||null===n)return n;if(n instanceof Array)return n.map(t);const r={};return Object.keys(n).forEach(e=>{r[e]=t(n[e])}),r}(t):JSON.parse(JSON.stringify(t,(t,n)=>n&&"object"==typeof n&&n.tagName?window.undefined:n))}}});
+//# sourceMappingURL=../sourcemaps/utils/misc.js.map

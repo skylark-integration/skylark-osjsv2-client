@@ -1,0 +1,9 @@
+/**
+ * skylark-osjsv2-client - A version of osjs-client that ported to running on skylarkjs
+ * @author Hudaokeji, Inc.
+ * @version v0.9.0
+ * @link https://github.com/skylark-integration/skylark-osjsv2-client/
+ * @license MIT
+ */
+define(["../../utils/events","../element"],function(t,e){"use strict";function i(e,i,s){"object"!=typeof(s=s||{})&&(console.error("Derp","applyArgs was not an object ?!"),s={});const r=document.createElement(i),n=e.getAttribute("data-src");e.getAttribute("data-controls")&&r.setAttribute("controls","controls"),e.getAttribute("data-autoplay")&&r.setAttribute("autoplay","autoplay"),Object.keys(s).forEach(function(e){let n=s[e];"function"==typeof n?(e=e.replace(/^on/,""),"video"!==i&&"audio"!==i||"load"!==e||(e="loadedmetadata"),t.$bind(r,e,n.bind(r),!1)):("boolean"==typeof s[e]&&(n=n?"true":"false"),r.setAttribute(e,n))}),r.src=n||"about:blank",e.appendChild(r)}return{GUIAudio:class extends e{static register(){return super.register({tagName:"gui-audio"},this)}on(e,i,s){const r=this.$element.querySelector("audio");return t.$bind(r,e,i.bind(this),s),this}build(t){return i(this.$element,"audio",t),this}},GUIVideo:class extends e{static register(){return super.register({tagName:"gui-video"},this)}on(e,i,s){const r=this.$element.querySelector("video");return t.$bind(r,e,i.bind(this),s),this}build(t){return i(this.$element,"video",t),this}},GUIImage:class extends e{static register(){return super.register({tagName:"gui-image"},this)}on(e,i,s){const r=this.$element.querySelector("img");return t.$bind(r,e,i.bind(this),s),this}build(t){return i(this.$element,"img",t),this}},GUICanvas:class extends e{static register(){return super.register({tagName:"gui-canvas"},this)}on(e,i,s){const r=this.$element.querySelector("canvas");return t.$bind(r,e,i.bind(this),s),this}build(){const t=document.createElement("canvas");return this.$element.appendChild(t),this}}}});
+//# sourceMappingURL=../../sourcemaps/gui/elements/visual.js.map

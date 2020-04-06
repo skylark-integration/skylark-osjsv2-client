@@ -1,0 +1,9 @@
+/**
+ * skylark-osjsv2-client - A version of osjs-client that ported to running on skylarkjs
+ * @author Hudaokeji, Inc.
+ * @version v0.9.0
+ * @link https://github.com/skylark-integration/skylark-osjsv2-client/
+ * @license MIT
+ */
+define(["../core/process","../core/locales"],function(t,n){"use strict";return class{constructor(t){if(this.options=Object.assign({name:null,root:null,match:null,enabled:!0,readOnly:!1,transport:null,visible:!0,searchable:!1,dynamic:!0,internal:!1,special:!1,options:{}},t),!this.options.transport)throw new Error("No transport was defined for mountpoint "+this.options.name);if(!this.options.name)throw new Error(n._("ERR_VFSMODULE_INVALID_CONFIG_FMT"));const o=this.options.name.replace(/\s/g,"-").toLowerCase(),s={icon:"devices/drive-harddisk.png",name:o,title:this.options.name,description:this.options.description||this.options.name,root:o+":///",match:function(t,n){return"string"==typeof t?new RegExp(t):t||new RegExp("^"+(n+"://").replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g,"\\$&"))}(this.options.match,o)};Object.keys(s).forEach(t=>{this.options[t]||(this.options[t]=s[t])}),this.name=o,this.isMounted=!1}mount(n){return n=Object.assign({notify:!0},n||{}),this.isMounted||this.option("special")||(n.notify&&t.message("vfs:mount",this.option("name"),{source:null}),this.isMounted=!0),Promise.resolve()}unmount(n){return n=Object.assign({notify:!0},n||{}),this.isMounted&&!this.option("special")&&(n.notify&&t.message("vfs:unmount",this.option("name"),{source:null}),this.isMounted=!1),Promise.resolve()}mounted(){return this.isMounted}enabled(){return this.option("enabled")}option(t){return this.options[t]}isReadOnly(){return this.option("readOnly")}setMounted(t){this.isMounted=!0===t}request(t,o,s){const e=this.option("transport");return e?e.request(t,o,s,this):Promise.reject(new Error(n._("ERR_VFSMODULE_NOT_FOUND_FMT",test)))}}});
+//# sourceMappingURL=../sourcemaps/vfs/mountpoint.js.map

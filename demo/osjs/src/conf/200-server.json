@@ -1,0 +1,123 @@
+{
+  "server" : {
+    "authenticator": "%authenticator%",
+    "storage": "%storage%",
+    "connection": "%connection%",
+    "tz": "",
+    "vfs": {
+      "mounts": {
+        "home": "%DROOT%/vfs/home/%USERNAME%",
+        "osjs": {
+          "ro": true,
+          "destination": "%DROOT%/dist"
+        },
+        "shared": "%DROOT%/vfs/public"
+      },
+      "groups": {
+        "shared": []
+      }
+    },
+    "api": {
+      "defaultGroups": ["api", "application", "upload", "fs", "curl"],
+      "groups": {
+        "users": "admin",
+        "curl": "curl",
+        "application": "application",
+        "fs": "fs"
+      }
+    },
+    "proxies": {
+      "http-bind-jabber/": "http://localhost:5280/http-bind/"
+    },
+    "logger": {
+      "format": ":status :method :url :res[content-length] (:response-time ms)"
+    },
+    "http": {
+      "hostname": null,
+      "port" : 8000,
+      "compression": {
+        "memLevel": 8,
+        "level": -1
+      },
+      "session": {
+        "module": "session-file-store",
+        "secret": "YOU SHOULD GENERATE YOUR OWN KEY",
+        "name": "connect.sid",
+        "options": {
+          "session-file-store": {
+            "path": "%ROOT%/src/server/sessions"
+          }
+        },
+        "cookie": {
+          "sameSite": null,
+          "domain": null,
+          "proxy": null,
+          "maxAge": 86400000,
+          "httpOnly": true,
+          "path": "/"
+        }
+      },
+      "ws": {
+        "port": "upgrade",
+        "path": ""
+      },
+      "cert": {
+        "path": null,
+        "name": "localhost",
+        "options": {
+          "requestCert": false,
+          "rejectUnauthorized": false
+        }
+      }
+    },
+    "modules": {
+      "auth": {
+        "demo": {
+          "user": {
+            "id": 1000,
+            "username": "demo",
+            "name": "Demo User",
+            "groups": ["admin"]
+          }
+        },
+        "pam": {
+          "groups": "/etc/osjs/groups.json",
+          "blacklist": "/etc/osjs/blacklist.json"
+        },
+        "shadow": {
+          "groups": "/etc/osjs/groups.json",
+          "blacklist": "/etc/osjs/blacklist.json"
+        },
+        "database": {
+          "driver": "mysql",
+          "sqlite": {
+            "database": "%ROOT%/src/server/authstorage.sqlite"
+          },
+          "mysql": {
+            "host": "localhost",
+            "user": "osjs",
+            "password": "osjs",
+            "database": "osjs"
+          }
+        }
+      },
+      "storage": {
+        "system": {
+          "settings": "/home/%USERNAME%/.osjs/settings.json"
+        },
+        "database": {
+          "driver": "mysql",
+          "sqlite": {
+            "database": "%ROOT%/src/server/authstorage.sqlite"
+          },
+          "mysql": {
+            "host": "localhost",
+            "user": "osjs",
+            "password": "osjs",
+            "database": "osjs"
+          }
+        }
+      }
+    }
+  }
+}

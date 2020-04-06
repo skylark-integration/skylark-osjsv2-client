@@ -1,0 +1,18 @@
+{
+  "critics": {
+    "wc": {
+      "limit": 20000
+    }
+  },
+  "ignore": [
+    "src/client/stylesheets/**",
+    "src/server/test/**",
+    "src/client/test/**",
+    "src/templates/**",
+    "src/packages/**",
+    "src/server/php",
+    "src/conf/**",
+    "dist/**",
+    "vfs/**"
+  ]
+}

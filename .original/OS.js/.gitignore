@@ -1,0 +1,47 @@
+node_modules
+*.swp
+*.swo
+.DS_Store
+.git-old
+*-tmp.*
+twistd.*
+.vagrant/*
+*.pyc
+*.bak
+*.o
+.tern-project
+.happypack
+.external-ecmascript.js
+
+# Misc
+.nightly
+.standalone
+.debian
+.nw
+TODO
+GIT_*
+
+# Storage
+vfs/*/*
+
+# Config files
+src/conf/999-*
+src/conf/900-custom.json
+src/server/settings.json
+src/server/packages.json
+src/server/*.key
+src/server/*.crt
+src/overlays
+
+# Builds
+doc/
+dist/*
+doc/jsdoc
+src/server/*.sqlite
+src/x11-launcher/session-launch
+
+# Vendor
+vendor
+src/server/php/vendor
+src/packages/*
+!src/packages/default

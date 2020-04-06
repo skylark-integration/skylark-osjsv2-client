@@ -1,0 +1,9 @@
+/**
+ * skylark-osjsv2-client - A version of osjs-client that ported to running on skylarkjs
+ * @author Hudaokeji, Inc.
+ * @version v0.9.0
+ * @link https://github.com/skylark-integration/skylark-osjsv2-client/
+ * @license MIT
+ */
+define(["../core/dialog","../core/locales","../core/config"],function(t,e,i){"use strict";return class extends t{constructor(t,n){"null"!==(t=Object.assign({},{fontName:i.getConfig("Fonts.default"),fontSize:12,fontColor:"#000000",backgroundColor:"#ffffff",fonts:i.getConfig("Fonts.list"),minSize:6,maxSize:30,text:"The quick brown fox jumps over the lazy dog",unit:"px"},t)).unit&&"unit"!==t.unit||(t.unit=""),super("FontDialog",{title:t.title||e._("DIALOG_FONT_TITLE"),width:400,height:300},t,n),this.selection={fontName:t.fontName,fontSize:t.fontSize+t.unit}}init(){const t=super.init(...arguments),e=this._find("FontPreview"),i=[],n=[];for(let t=this.args.minSize;t<this.args.maxSize;t++)i.push({value:t,label:t});for(let t=0;t<this.args.fonts.length;t++)n.push({value:this.args.fonts[t],label:this.args.fonts[t]});const o=()=>{e.querySelector("textarea").style.fontFamily=this.selection.fontName,e.querySelector("textarea").style.fontSize=this.selection.fontSize},s=this._find("FontName");s.add(n).set("value",this.args.fontName),s.on("change",t=>{this.selection.fontName=t.detail,o()});const l=this._find("FontSize");return l.add(i).set("value",this.args.fontSize),l.on("change",t=>{this.selection.fontSize=t.detail+this.args.unit,o()}),e.$element.style.color=this.args.fontColor,e.$element.style.backgroundColor=this.args.backgroundColor,e.set("value",this.args.text),this.args.fontSize<0&&this._find("FontSizeContainer").hide(),o(),t}onClose(t,e){const i="ok"===e?this.selection:null;this.closeCallback(t,e,i)}}});
+//# sourceMappingURL=../sourcemaps/dialogs/font.js.map

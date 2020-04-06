@@ -1,0 +1,16 @@
+{
+  "className": "ApplicationEXAMPLE",
+  "name": "EXAMPLE",
+  "mime": null,
+  "icon": "categories/applications-system.png",
+  "preload": ["main.js"],
+  "main": {
+    "webpack": ["main.js"]
+  },
+  "build": {
+    "copy": ["data"]
+  }
+}
+
+
+

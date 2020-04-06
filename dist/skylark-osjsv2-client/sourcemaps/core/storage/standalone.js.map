@@ -1,0 +1,1 @@
+{"version":3,"sources":["core/storage/standalone.js"],"names":["define","DemoStorage"],"mappings":";;;;;;;AAAAA,QACC,UACE,SAAUC,GACT,aACA,qBAAuCA","file":"../../../core/storage/standalone.js","sourcesContent":["define([\n\t'./demo'\n], function (DemoStorage) {\n    'use strict';\n    return class StandaloneStorage extends DemoStorage {\n    };\n});"]}

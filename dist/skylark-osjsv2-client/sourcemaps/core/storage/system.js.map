@@ -1,0 +1,1 @@
+{"version":3,"sources":["core/storage/system.js"],"names":["define","Storage"],"mappings":";;;;;;;AAAAA,QACC,cACE,SAAUC,GACT,aACA,qBAAmCA","file":"../../../core/storage/system.js","sourcesContent":["define([\n\t'../storage'\n], function (Storage) {\n    'use strict';\n    return class SystemStorage extends Storage {\n    };\n});"]}

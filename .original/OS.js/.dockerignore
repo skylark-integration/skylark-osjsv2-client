@@ -1,0 +1,5 @@
+*.md
+.git*
+.bithoundrc
+.travis.yml
+Vagrantfile

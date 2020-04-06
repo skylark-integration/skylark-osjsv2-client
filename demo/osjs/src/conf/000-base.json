@@ -1,0 +1,42 @@
+{
+  "connection": "http",
+  "authenticator": "demo",
+  "storage": "demo",
+
+  "client" : {
+    "Version" : "2.1.6",
+    "SettingsManager": {},
+    "PackageManager": {},
+    "Preloads": {},
+    "AutoStart": [],
+    "Languages": {},
+    "Styles": [],
+    "Sounds": {},
+    "Icons": {},
+    "Fonts": {},
+    "MIME": {},
+    "WM": {},
+    "VFS": {}
+  },
+
+  "repositories": ["default"],
+  "overlays": [],
+
+  "packages": {
+    "ForceEnable": [],
+    "ForceDisable": []
+  },
+
+  "mime": {
+  },
+
+  "themes": {
+  },
+
+  "server" : {
+  },
+
+  "build": {
+  }
+
+}

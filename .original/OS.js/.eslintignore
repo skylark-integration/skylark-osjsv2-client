@@ -1,0 +1,7 @@
+src/templates/**
+src/server/php/**
+src/server/test/**
+src/client/test/**
+src/conf/**
+dist/**
+vfs/**
