@@ -12,6 +12,6 @@
   ],
   "author": "Anders Evenrud <andersevenrud@gmail.com>",
   "devDependencies": {
-    "electron": "^1.4.1"
+    "electron": "^9.1.0"
   }
 }
