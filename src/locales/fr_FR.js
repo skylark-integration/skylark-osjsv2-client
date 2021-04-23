@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': "Erreur lors de l'ouverture du fichier",
     'ERR_WM_NOT_RUNNING': "Le gestionnaire de fenêtre n'est pas en cours d'execution",
     'ERR_FILE_OPEN_FMT': "Le fichier '**{0}**' n'a pas pu être ouvert",
@@ -375,3 +376,4 @@ module.exports = {
     'LBL_ONTOP': 'Premier plan',
     'LBL_BACKGROUND': "Fond d'écran"
 };
+});

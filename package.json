@@ -14,7 +14,7 @@
   "homepage": "https://github.com/skylark-integration/skylark-osjsv2-client/",
   "author": "Hudaokeji, Inc.",
   "scripts": {
-    "build": "sbundle build ."
+    "build": "slib build ."
   },
   "repository": {
     "type": "git",
@@ -37,14 +37,25 @@
   "engines": {
     "node": ">=0.10.1"
   },
-  "skylarkjs" : {
-    "build" : {
-      "prepare" : {
-        "texttojs" : ["html","json","css"],
-        "jsxtojs" : false,
-        "es6toamd" : false,
-        "cjstoamd" : false
+  "skylarkjs": {
+    "directories": {
+      "dependencies": "./node_modules"
+    },
+    "secondaries": {},
+    "build": {
+      "prepare": {
+        "texttojs": [
+          "html",
+          "json",
+          "css"
+        ],
+        "jsxtojs": false,
+        "es6toamd": false,
+        "cjstoamd": false
+      },
+      "bundles": {
+        "all": true
       }
     }
-  }    
+  }  
 }

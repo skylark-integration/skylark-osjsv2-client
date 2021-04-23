@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': '파일을 열 수 없습니다',
     'ERR_WM_NOT_RUNNING': '윈도우 관리자가 실행 중이지 않습니다',
     'ERR_FILE_OPEN_FMT': "'**{0}**' 파일을 실행할 수 없습니다",
@@ -326,3 +327,4 @@ module.exports = {
     'LBL_SCOPE': '범위',
     'LBL_SEARCH': '검색'
 };
+});

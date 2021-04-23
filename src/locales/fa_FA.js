@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'خطا در باز کردن فايل',
     'ERR_WM_NOT_RUNNING': 'مديريت پنجره ها اجرا نشده است',
     'ERR_FILE_OPEN_FMT': "فايل '**{0}**' رانمي توان باز کرد",
@@ -298,3 +299,4 @@ module.exports = {
     'LBL_SHOW_HIDDENFILES': 'نمايش فايل هاي مخفي',
     'LBL_SHOW_FILEEXTENSIONS': 'نمايش پسوند فايل'
 };
+});

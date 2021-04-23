@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'Lỗi khi mở tệp',
     'ERR_WM_NOT_RUNNING': 'Trình quản lí cửa sổ không hoạt động',
     'ERR_FILE_OPEN_FMT': "Tập tin '**{0}**' không mở được",
@@ -348,3 +349,4 @@ module.exports = {
     'LBL_USERS': 'Người dùng',
     'LBL_FONTS': 'Phông'
 };
+});

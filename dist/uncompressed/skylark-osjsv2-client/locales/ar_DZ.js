@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'خطأ فتح الملف',
     'ERR_WM_NOT_RUNNING': 'مسيير النوافذ ليس قيد التشغيل',
     'ERR_FILE_OPEN_FMT': " الملف '**{0}**' غير قابل للفتح من طرف النظام",
@@ -340,3 +341,4 @@ module.exports = {
     'LBL_APPLICATION': 'تطبيق',
     'LBL_SCOPE': 'الزمرة'
 };
+});

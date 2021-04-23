@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'Ãðåøêà ïðè îòâàðÿíå íà ôàéë',
     'ERR_WM_NOT_RUNNING': 'Ìåíèäæúðà íà ïðîçîðöè íå ðàáîòè ',
     'ERR_FILE_OPEN_FMT': "Ôàéëúò '**{0}**' íå ìîæå äà áúäå îòâîðåí",
@@ -282,3 +283,4 @@ module.exports = {
     'LBL_ITEMS': 'Обекти',
     'LBL_GENERAL': 'Основен'
 };
+});

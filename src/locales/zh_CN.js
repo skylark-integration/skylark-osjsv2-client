@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': '打开文件错误',
     'ERR_WM_NOT_RUNNING': '窗口管理器未支持',
     'ERR_FILE_OPEN_FMT': "文件 '**{0}**' 无法打开",
@@ -252,3 +253,4 @@ module.exports = {
     'LBL_STATUS': '状态',
     'LBL_READONLY': '只读'
 };
+});

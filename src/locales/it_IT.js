@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': "Errore durante l'apertura del file",
     'ERR_WM_NOT_RUNNING': 'Windows manager non in esecuzione',
     'ERR_FILE_OPEN_FMT': "Il file '**{0}**' non può essere aperto",
@@ -371,3 +372,4 @@ module.exports = {
     'LBL_LOCK': 'Bloccare',
     'LBL_UNLOCK': 'Sbloccare'
 };
+});

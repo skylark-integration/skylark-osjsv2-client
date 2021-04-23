@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'Fout bij openen bestand',
     'ERR_WM_NOT_RUNNING': 'Window manager is niet gestart',
     'ERR_FILE_OPEN_FMT': "Het bestand '**{0}**' kon niet worden geopend",
@@ -313,3 +314,4 @@ module.exports = {
     'LBL_ITEMS': 'Items',
     'LBL_GENERAL': 'Algemeen'
 };
+});

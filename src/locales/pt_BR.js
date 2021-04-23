@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'Erro ao abrir arquivo',
     'ERR_WM_NOT_RUNNING': 'Gerenciador de janelas não está executando',
     'ERR_FILE_OPEN_FMT': "O arquivo '**{0}**' não pôde ser aberto",
@@ -274,3 +275,4 @@ module.exports = {
     'LBL_UPDATE': 'Atualizar',
     'LBL_REMOVE': 'Remover'
 };
+});

@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'Błąd otwierania pliku',
     'ERR_WM_NOT_RUNNING': 'Menedżer okien nie jest włączony',
     'ERR_FILE_OPEN_FMT': "Nie można otworzyć '**{0}**'",
@@ -295,3 +296,4 @@ module.exports = {
     'LBL_GENERAL': 'Ogólne',
     'LBL_DEBUG': 'Debugowanie'
 };
+});

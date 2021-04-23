@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'Error abriendo archivo',
     'ERR_WM_NOT_RUNNING': 'El gestor de ventanas no está en ejecución',
     'ERR_FILE_OPEN_FMT': "No se pudo abrir el fichero '**{0}**'",
@@ -273,3 +274,4 @@ module.exports = {
     'LBL_GENERAL': 'General',
     'LBL_BACKGROUND': 'Pozadie'
 };
+});

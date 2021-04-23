@@ -75,7 +75,7 @@
   factory(define,require);
 
   if (!isAmd) {
-    var skylarkjs = require("skylark-langx/skylark");
+    var skylarkjs = require("skylark-langx-ns");
 
     if (isCmd) {
       module.exports = skylarkjs;
@@ -14917,7 +14917,7 @@ define('skylark-osjsv2-client/core/init',[
             }
         });
         return new Promise(resolve => {
-            Storage.instance.getLastSession(getLastSession).then(adds => { // modified by lwf
+            Storage.instance.getLastSession(SettingsManager).then(adds => {  // modified by lwf
                 adds.forEach(function (iter) {
                     if (typeof checkMap[iter.name] === 'undefined') {
                         list.push(iter);
@@ -16979,6 +16979,7 @@ return {
     'LBL_WINDOWS': 'Windows'
 };
 });
+
 define('skylark-osjsv2-client/core/auth/database',[
 	'../authenticator'
 ], function (Authenticator) {
@@ -21462,3 +21463,4 @@ define('skylark-osjsv2-client', ['skylark-osjsv2-client/main'], function (main) 
 
 
 },this);
+//# sourceMappingURL=sourcemaps/skylark-osjsv2-client-all.js.map

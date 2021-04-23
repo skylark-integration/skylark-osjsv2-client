@@ -1,4 +1,5 @@
-module.exports = {
+define([],function() {
+return {
     'ERR_FILE_OPEN': 'Chyba pri otváraní súboru',
     'ERR_WM_NOT_RUNNING': 'Správca okien nebeží',
     'ERR_FILE_OPEN_FMT': "Súbor '**{0}**' sa nedá otvoriť",
@@ -275,3 +276,4 @@ module.exports = {
     'LBL_REMOVE': 'Odstrániť',
     'LBL_SHOW_SIDEBAR': 'Ukáž bočnú lištu'
 };
+});

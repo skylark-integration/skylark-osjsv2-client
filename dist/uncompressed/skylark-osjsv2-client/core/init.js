@@ -330,7 +330,7 @@ define([
             }
         });
         return new Promise(resolve => {
-            Storage.instance.getLastSession(getLastSession).then(adds => { // modified by lwf
+            Storage.instance.getLastSession(SettingsManager).then(adds => {  // modified by lwf
                 adds.forEach(function (iter) {
                     if (typeof checkMap[iter.name] === 'undefined') {
                         list.push(iter);
