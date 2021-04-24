@@ -4,20 +4,20 @@ define([
     '../core/theme',
     '../utils/misc',
     '../core/locales'
-], function (DialogWindow, PackageManager, Theme, Utils, a) {
+], function (DialogWindow, PackageManager, Theme, Utils, Locales) {
     'use strict';
     return class ApplicationChooserDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('ApplicationChooserDialog', {
-                title: args.title || a._('DIALOG_APPCHOOSER_TITLE'),
+                title: args.title || Locales._('DIALOG_APPCHOOSER_TITLE'),
                 width: 400,
                 height: 400
             }, args, callback);
         }
         init() {
             const root = super.init(...arguments);
-            const cols = [{ label: a._('LBL_NAME') }];
+            const cols = [{ label: Locales._('LBL_NAME') }];
             const rows = [];
             const metadata = PackageManager.getPackages();
             (this.args.list || []).forEach(name => {
@@ -44,7 +44,7 @@ define([
             let label = '<unknown mime>';
             if (this.args.file) {
                 file = Utils.format('{0} ({1})', this.args.file.filename, this.args.file.mime);
-                label = a._('DIALOG_APPCHOOSER_SET_DEFAULT', this.args.file.mime);
+                label = Locales._('DIALOG_APPCHOOSER_SET_DEFAULT', this.args.file.mime);
             }
             this._find('FileName').set('value', file);
             this._find('SetDefault').set('label', label);
@@ -59,7 +59,7 @@ define([
                     result = selected[0].data.className;
                 }
                 if (!result) {
-                    DialogWindow.create('Alert', { message: a._('DIALOG_APPCHOOSER_NO_SELECTION') }, null, this);
+                    DialogWindow.create('Alert', { message: Locales._('DIALOG_APPCHOOSER_NO_SELECTION') }, null, this);
                     return;
                 }
                 result = {

@@ -2400,7 +2400,7 @@ define('skylark-osjsv2-client/core/connection',[
     '../helpers/event-handler',
     '../helpers/loader',
     './config'
-], function (axios, EventHandler, Loader, a) {
+], function (axios, EventHandler, Loader, Config) {
     'use strict';
     function progressHandler(ev, onprogress) {
         if (ev.lengthComputable) {
@@ -2460,12 +2460,12 @@ define('skylark-osjsv2-client/core/connection',[
         }
         getVFSPath(item, options) {
             options = options || {};
-            const base = a.getConfig('Connection.RootURI', '/').replace(/\/?$/, '/');
-            const defaultDist = a.getConfig('VFS.Dist');
+            const base = Config.getConfig('Connection.RootURI', '/').replace(/\/?$/, '/');
+            const defaultDist = Config.getConfig('VFS.Dist');
             if (window.location.protocol === 'file:') {
                 return item ? base + item.path.substr(defaultDist.length) : base;
             }
-            let url = a.getConfig('Connection.FSURI', '/');
+            let url = Config.getConfig('Connection.FSURI', '/');
             if (item) {
                 url += '/read';
                 options.path = item.path;
@@ -2528,7 +2528,7 @@ define('skylark-osjsv2-client/core/connection',[
             let raw = true;
             let requestOptions = {
                 responseType: 'json',
-                url: a.getConfig('Connection.APIURI') + '/' + realMethod,
+                url: Config.getConfig('Connection.APIURI') + '/' + realMethod,
                 method: 'POST',
                 data: args
             };
@@ -2541,7 +2541,7 @@ define('skylark-osjsv2-client/core/connection',[
                 } else if (realMethod === 'upload') {
                     requestOptions.url = this.getVFSPath();
                 } else {
-                    requestOptions.url = a.getConfig('Connection.FSURI') + '/' + realMethod;
+                    requestOptions.url = Config.getConfig('Connection.FSURI') + '/' + realMethod;
                 }
             }
             return {
@@ -2634,7 +2634,7 @@ define('skylark-osjsv2-client/core/storage',[
         }
     };
 });
-define('skylark-osjsv2-client/helpers/settings-fragment',['../utils/misc'], function (a) {
+define('skylark-osjsv2-client/helpers/settings-fragment',['../utils/misc'], function (Misc) {
     'use strict';
     return class SettingsFragment {
         constructor(obj, poolName, sm) {
@@ -2653,7 +2653,7 @@ define('skylark-osjsv2-client/helpers/settings-fragment',['../utils/misc'], func
         }
         set(key, value, save, triggerWatch) {
             if (key === null) {
-                a.mergeObject(this._settings, value);
+                Misc.mergeObject(this._settings, value);
             } else {
                 if ([
                         'number',
@@ -2687,7 +2687,7 @@ define('skylark-osjsv2-client/helpers/settings-fragment',['../utils/misc'], func
             return nestedSetting;
         }
         mergeDefaults(defaults) {
-            a.mergeObject(this._settings, defaults, { overwrite: false });
+            Misc.mergeObject(this._settings, defaults, { overwrite: false });
             return this;
         }
         instance(key) {
@@ -3310,12 +3310,12 @@ define('skylark-osjsv2-client/vfs/file',[
     '../utils/fs',
     '../core/config',
     '../core/locales'
-], function (FS, a, b) {
+], function (FS, Config, Locales) {
     'use strict';
     return class FileMetadata {
         constructor(arg, mime) {
             if (!arg) {
-                throw new Error(b._('ERR_VFS_FILE_ARGS'));
+                throw new Error(Locales._('ERR_VFS_FILE_ARGS'));
             }
             this.path = null;
             this.filename = null;
@@ -3366,7 +3366,7 @@ define('skylark-osjsv2-client/vfs/file',[
                 return;
             }
             const ext = FS.filext(this.path);
-            this.mime = a.getConfig('MIME.mapping')['.' + ext] || 'application/octet-stream';
+            this.mime = Config.getConfig('MIME.mapping')['.' + ext] || 'application/octet-stream';
         }
         static fromUpload(destination, f) {
             return new FileMetadata({
@@ -4237,7 +4237,7 @@ define('skylark-osjsv2-client/core/theme',[
     '../utils/fs',
     '../utils/compability',
     '../utils/dom'
-], function (SettingsManager, a, FileMetadata, PackageManager, FS, Compability, DOM) {
+], function (SettingsManager, Config, FileMetadata, PackageManager, FS, Compability, DOM) {
     'use strict';
     class Theme {
         constructor() {
@@ -4320,11 +4320,11 @@ define('skylark-osjsv2-client/core/theme',[
             document.body.setAttribute('data-background-style', className);
         }
         getThemeCSS(name) {
-            let root = a.getConfig('Connection.RootURI', '/');
+            let root = Config.getConfig('Connection.RootURI', '/');
             if (name === null) {
                 return root + 'blank.css';
             }
-            root = a.getConfig('Connection.ThemeURI');
+            root = Config.getConfig('Connection.ThemeURI');
             return root + '/' + name + '.css';
         }
         setTheme(settings) {
@@ -4385,7 +4385,7 @@ define('skylark-osjsv2-client/core/theme',[
         getThemeResource(name, type) {
             name = name || null;
             type = type || null;
-            const root = a.getConfig('Connection.ThemeURI');
+            const root = Config.getConfig('Connection.ThemeURI');
             function getName(str, theme) {
                 if (!str.match(/^\//)) {
                     if (type === 'base' || type === null) {
@@ -4406,7 +4406,7 @@ define('skylark-osjsv2-client/core/theme',[
             name = name || null;
             if (name && !name.match(/^(https?:)?\//)) {
                 const theme = this.getSoundTheme();
-                const root = a.getConfig('Connection.SoundURI');
+                const root = Config.getConfig('Connection.SoundURI');
                 const ext = this.oggAvailable ? 'oga' : 'mp3';
                 name = `${ root }/${ theme }/${ name }.${ ext }`;
             }
@@ -4423,16 +4423,20 @@ define('skylark-osjsv2-client/core/theme',[
             }
             const f = this.getSound(filename);
             console.debug('playSound()', name, filename, f, volume);
-            const a = new Audio(f);
-            a.volume = volume;
-            a.play();
-            return a;
+            const audio = new Audio(f);
+            audio.volume = volume;
+            try {
+                audio.play();
+            } catch (e) {
+                console.error(e);
+            }
+            return audio;
         }
         getIcon(name, size) {
             name = name || '';
             size = size || '16x16';
             if (!name.match(/^(https:?)?\//)) {
-                const root = a.getConfig('Connection.IconURI');
+                const root = Config.getConfig('Connection.IconURI');
                 const theme = this.getIconTheme();
                 name = `${ root }/${ theme }/${ size }/${ name }`;
             }
@@ -4553,13 +4557,13 @@ define('skylark-osjsv2-client/core/theme',[
             return sounds[k] || null;
         }
         getStyleThemes() {
-            return a.getConfig('Styles', []);
+            return Config.getConfig('Styles', []);
         }
         getSoundThemes() {
-            return a.getConfig('Sounds', []);
+            return Config.getConfig('Sounds', []);
         }
         getIconThemes() {
-            return a.getConfig('Icons', []);
+            return Config.getConfig('Icons', []);
         }
     }
     return new Theme();
@@ -4693,7 +4697,7 @@ define('skylark-osjsv2-client/utils/preloader',[
     '../helpers/promise-limit',
     '../core/config',
     'skylark-axios'
-], function (promiseLimit, a, axios) {
+], function (promiseLimit, Config, axios) {
     'use strict';
     const getFileType = src => {
         if (src.match(/\.js$/i)) {
@@ -4705,7 +4709,7 @@ define('skylark-osjsv2-client/utils/preloader',[
     };
     const getSource = src => {
         if (src && !src.match(/^(\/|file|https?)/)) {
-            return a.getBrowserPath(src);
+            return Config.getBrowserPath(src);
         }
         return src;
     };
@@ -4865,7 +4869,21 @@ define('skylark-osjsv2-client/core/process',[
     '../utils/preloader',
     './settings-manager',
     './package-manager'
-], function (Connection, EventHandler, Theme, FS, Config, Compability, locales, hooks, Loader, FileMetadata, Preloader, SettingsManager, PackageManager) {
+], function (
+    Connection, 
+    EventHandler, 
+    Theme, 
+    FS, 
+    Config, 
+    Compability, 
+    locales, 
+    hooks, 
+    Loader, 
+    FileMetadata, 
+    Preloader, 
+    SettingsManager, 
+    PackageManager
+) {
     'use strict';
     let alreadyLaunching = [];
     let runningProcesses = [];
@@ -5284,7 +5302,7 @@ define('skylark-osjsv2-client/core/process',[
 define('skylark-osjsv2-client/vfs/mountpoint',[
     '../core/process',
     '../core/locales'
-], function ( Process, a) {
+], function ( Process, Locales) {
     'use strict';
     function createMatch(m, sname) {
         if (typeof m === 'string') {
@@ -5314,7 +5332,7 @@ define('skylark-osjsv2-client/vfs/mountpoint',[
                 throw new Error('No transport was defined for mountpoint ' + this.options.name);
             }
             if (!this.options.name) {
-                throw new Error(a._('ERR_VFSMODULE_INVALID_CONFIG_FMT'));
+                throw new Error(Locales._('ERR_VFSMODULE_INVALID_CONFIG_FMT'));
             }
             const sname = this.options.name.replace(/\s/g, '-').toLowerCase();
             const defaults = {
@@ -5373,7 +5391,7 @@ define('skylark-osjsv2-client/vfs/mountpoint',[
             if (transport) {
                 return transport.request(method, args, options, this);
             }
-            return Promise.reject(new Error(a._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
+            return Promise.reject(new Error(Locales._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
         }
     };
 });
@@ -5381,7 +5399,7 @@ define('skylark-osjsv2-client/core/mount-manager',[
     '../vfs/mountpoint',
     './locales',
     './config'
-], function (Mountpoint, a, b) {
+], function (Mountpoint, Locales, Config) {
     'use strict';
 
     class MountManager {
@@ -5396,7 +5414,7 @@ define('skylark-osjsv2-client/core/mount-manager',[
             }
             this.transports = loadTransports();
             this.inited = true;
-            const config = b.getConfig('VFS.Mountpoints', {});
+            const config = Config.getConfig('VFS.Mountpoints', {});
             const enabled = Object.keys(config).filter(name => {
                 return config[name].enabled !== false;
             });
@@ -5438,7 +5456,7 @@ define('skylark-osjsv2-client/core/mount-manager',[
                     return false;
                 });
                 if (found.length) {
-                    return Promise.reject(new Error(a._('ERR_VFSMODULE_ALREADY_MOUNTED_FMT', point.option('name'))));
+                    return Promise.reject(new Error(Locales._('ERR_VFSMODULE_ALREADY_MOUNTED_FMT', point.option('name'))));
                 }
                 this.mountpoints.push(point);
             } catch (e) {
@@ -5468,7 +5486,7 @@ define('skylark-osjsv2-client/core/mount-manager',[
                     }).catch(reject);
                 });
             }
-            return Promise.reject(new Error(a._('ERR_VFSMODULE_NOT_MOUNTED_FMT', moduleName)));
+            return Promise.reject(new Error(Locales._('ERR_VFSMODULE_NOT_MOUNTED_FMT', moduleName)));
         }
         getModules(filter) {
             filter = Object.assign({}, {
@@ -5529,7 +5547,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     '../core/settings-manager',
     '../core/connection',
     '../core/locales'
-], function (FS, FileMetadata, FileDataURL, Process, MountManager, PackageManager, SettingsManager, Connection, a) {
+], function (FS, FileMetadata, FileDataURL, Process, MountManager, PackageManager, SettingsManager, Connection, Locales) {
     'use strict';
     let watches = [];
     function noop(err, res) {
@@ -5557,7 +5575,7 @@ define('skylark-osjsv2-client/vfs/fs',[
             item = new FileMetadata(item);
         }
         if (!(item instanceof FileMetadata)) {
-            throw new TypeError(err || a._('ERR_VFS_EXPECT_FILE'));
+            throw new TypeError(err || Locales._('ERR_VFS_EXPECT_FILE'));
         }
         const alias = hasAlias(item);
         if (alias) {
@@ -5565,10 +5583,10 @@ define('skylark-osjsv2-client/vfs/fs',[
         }
         const mountpoint = MountManager.getModuleFromPath(item.path);
         if (!mountpoint) {
-            throw new Error(a._('ERR_VFSMODULE_NOT_FOUND_FMT', item.path));
+            throw new Error(Locales._('ERR_VFSMODULE_NOT_FOUND_FMT', item.path));
         }
         if (checkRo && mountpoint.isReadOnly()) {
-            throw new Error(a._('ERR_VFSMODULE_READONLY_FMT', mountpoint.name));
+            throw new Error(Locales._('ERR_VFSMODULE_READONLY_FMT', mountpoint.name));
         }
         return item;
     }
@@ -5591,7 +5609,7 @@ define('skylark-osjsv2-client/vfs/fs',[
         return new Promise((resolve, reject) => {
             exists(item).then(result => {
                 if (result) {
-                    return reject(new Error(a._('ERR_VFS_FILE_EXISTS')));
+                    return reject(new Error(Locales._('ERR_VFS_FILE_EXISTS')));
                 }
                 return resolve();
             }).catch(error => {
@@ -5692,7 +5710,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     function requestWrapper(mountpoint, method, args, options, appRef) {
         console.info('VFS operation', ...arguments);
         if (!mountpoint) {
-            return Promise.reject(new Error(a._('ERR_VFSMODULE_INVALID')));
+            return Promise.reject(new Error(Locales._('ERR_VFSMODULE_INVALID')));
         }
         return new Promise((resolve, reject) => {
             mountpoint.request(method, args, options).then(response => {
@@ -5703,12 +5721,12 @@ define('skylark-osjsv2-client/vfs/fs',[
     function performRequest(method, args, options, test, appRef, errorStr) {
         return new Promise((resolve, reject) => {
             if (options && !(options instanceof Object)) {
-                reject(new TypeError(a._('ERR_ARGUMENT_FMT', 'VFS::' + method, 'options', 'Object', typeof options)));
+                reject(new TypeError(Locales._('ERR_ARGUMENT_FMT', 'VFS::' + method, 'options', 'Object', typeof options)));
                 return;
             }
             const mountpoint = MountManager.getModuleFromPath(test);
             if (!mountpoint) {
-                reject(new Error(a._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
+                reject(new Error(Locales._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
                 return;
             }
             requestWrapper(mountpoint, method, args, options, appRef).then(resolve).catch(reject);
@@ -5754,7 +5772,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     function find(item, args, options) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -5770,7 +5788,7 @@ define('skylark-osjsv2-client/vfs/fs',[
         const vfsSettings = SettingsManager.get('VFS');
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         const oitem = new FileMetadata(item);
         const alias = hasAlias(oitem, true);
@@ -5810,7 +5828,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     function write(item, data, options, appRef) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item, null, true);
@@ -5824,18 +5842,18 @@ define('skylark-osjsv2-client/vfs/fs',[
                     item,
                     ab
                 ], options, appRef).then(resolve).catch(e => {
-                    reject(new Error(a._('ERR_VFSMODULE_WRITE_FMT', e)));
+                    reject(new Error(Locales._('ERR_VFSMODULE_WRITE_FMT', e)));
                 });
                 return true;
             }).catch(e => {
-                reject(new Error(a._('ERR_VFSMODULE_WRITE_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_WRITE_FMT', e)));
             });
         });
     }
     function read(item, options) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -5883,18 +5901,18 @@ define('skylark-osjsv2-client/vfs/fs',[
                 }
                 return resolve(response);
             }).catch(e => {
-                reject(new Error(a._('ERR_VFSMODULE_READ_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_READ_FMT', e)));
             });
         });
     }
     function copy(src, dest, options, appRef) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
-            src = checkMetadataArgument(src, a._('ERR_VFS_EXPECT_SRC_FILE'));
-            dest = checkMetadataArgument(dest, a._('ERR_VFS_EXPECT_DST_FILE'), true);
+            src = checkMetadataArgument(src, Locales._('ERR_VFS_EXPECT_SRC_FILE'));
+            dest = checkMetadataArgument(dest, Locales._('ERR_VFS_EXPECT_DST_FILE'), true);
         } catch (e) {
             return Promise.reject(e);
         }
@@ -5938,18 +5956,18 @@ define('skylark-osjsv2-client/vfs/fs',[
         return new Promise((resolve, reject) => {
             promise.then(resolve).catch(e => {
                 dialogProgress(100);
-                reject(new Error(a._('ERR_VFSMODULE_COPY_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_COPY_FMT', e)));
             });
         });
     }
     function move(src, dest, options, appRef) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
-            src = checkMetadataArgument(src, a._('ERR_VFS_EXPECT_SRC_FILE'));
-            dest = checkMetadataArgument(dest, a._('ERR_VFS_EXPECT_DST_FILE'), true);
+            src = checkMetadataArgument(src, Locales._('ERR_VFS_EXPECT_SRC_FILE'));
+            dest = checkMetadataArgument(dest, Locales._('ERR_VFS_EXPECT_DST_FILE'), true);
         } catch (e) {
             return Promise.reject(e);
         }
@@ -5990,7 +6008,7 @@ define('skylark-osjsv2-client/vfs/fs',[
         return new Promise((resolve, reject) => {
             promise.then(resolve).catch(e => {
                 dialogProgress(100);
-                reject(new Error(a._('ERR_VFSMODULE_MOVE_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_MOVE_FMT', e)));
             });
         });
     }
@@ -6000,7 +6018,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     function unlink(item, options, appRef) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item, null, true);
@@ -6026,7 +6044,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     function mkdir(item, options, appRef) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item, null, true);
@@ -6037,7 +6055,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     }
     function exists(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -6048,7 +6066,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     }
     function fileinfo(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -6060,7 +6078,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     function url(item, options) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -6072,13 +6090,13 @@ define('skylark-osjsv2-client/vfs/fs',[
     function upload(args, options, appRef) {
         args = args || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         if (!args.files) {
-            return Promise.reject(new Error(a._('ERR_VFS_UPLOAD_NO_FILES')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UPLOAD_NO_FILES')));
         }
         if (!args.destination) {
-            return Promise.reject(new Error(a._('ERR_VFS_UPLOAD_NO_DEST')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UPLOAD_NO_DEST')));
         }
         const dest = new FileMetadata(args.destination);
         const mountpoint = MountManager.getModuleFromPath(args.destination);
@@ -6095,13 +6113,13 @@ define('skylark-osjsv2-client/vfs/fs',[
                     }).catch(reject);
                 });
             })).then(resolve).catch(e => {
-                reject(new Error(a._('ERR_VFS_UPLOAD_FAIL_FMT', e)));
+                reject(new Error(Locales._('ERR_VFS_UPLOAD_FAIL_FMT', e)));
             });
         });
     }
     function download(file) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             file = checkMetadataArgument(file);
@@ -6109,7 +6127,7 @@ define('skylark-osjsv2-client/vfs/fs',[
             return Promise.reject(e);
         }
         if (!file.path) {
-            return Promise.reject(new Error(a._('ERR_VFS_DOWNLOAD_NO_FILE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_DOWNLOAD_NO_FILE')));
         }
         const promise = new Promise((resolve, reject) => {
             const mountpoint = MountManager.getModuleFromPath(file);
@@ -6124,13 +6142,13 @@ define('skylark-osjsv2-client/vfs/fs',[
         });
         return new Promise((resolve, reject) => {
             promise.then(resolve).catch(e => {
-                reject(new Error(a._('ERR_VFS_DOWNLOAD_FAILED', e)));
+                reject(new Error(Locales._('ERR_VFS_DOWNLOAD_FAILED', e)));
             });
         });
     }
     function trash(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -6141,7 +6159,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     }
     function untrash(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -6155,7 +6173,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     }
     function freeSpace(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -6168,7 +6186,7 @@ define('skylark-osjsv2-client/vfs/fs',[
     function watch(item, callback) {
         callback = callback || noop;
         if (arguments.length < 2) {
-            callback(a._('ERR_VFS_NUM_ARGS'));
+            callback(Locales._('ERR_VFS_NUM_ARGS'));
             return -1;
         }
         try {
@@ -7282,7 +7300,7 @@ define('skylark-osjsv2-client/core/window-manager',[
     './locales',
     './config',
     '../helpers/window-behaviour'
-], function (DOM, Events, Utils, Keycodes, Theme, Process,   Connection, SettingsManager,  a, b, c) {
+], function (DOM, Events, Utils, Keycodes, Theme, Process,   Connection, SettingsManager,  Locales, Config, WindowBehaviour) {
     'use strict';
     function checkForbiddenKeyCombo(ev) {
         return false;
@@ -7409,14 +7427,14 @@ define('skylark-osjsv2-client/core/window-manager',[
 
             Connection.instance.subscribe('online', () => {
                 Notification.create({
-                    title: a._('LBL_INFO'),
-                    message: a._('CONNECTION_RESTORED')
+                    title: Locales._('LBL_INFO'),
+                    message: Locales._('CONNECTION_RESTORED')
                 });
             });
             Connection.instance.subscribe('offline', reconnecting => {
                 Notification.create({
-                    title: a._('LBL_WARNING'),
-                    message: a._(reconnecting ? 'CONNECTION_RESTORE_FAILED' : 'CONNECTION_LOST')
+                    title: Locales._('LBL_WARNING'),
+                    message: Locales._(reconnecting ? 'CONNECTION_RESTORE_FAILED' : 'CONNECTION_LOST')
                 });
             });
 
@@ -7472,7 +7490,7 @@ define('skylark-osjsv2-client/core/window-manager',[
             } catch (e) {
                 console.error('WindowManager::addWindow()', '=>', 'Window::init()', e, e.stack);
             }
-            c.createWindowBehaviour(w, this);
+            WindowBehaviour.createWindowBehaviour(w, this);
             this._windows.push(w);
             w._inited();
             //if (focus === true || w instanceof DialogWindow) {
@@ -7751,8 +7769,8 @@ define('skylark-osjsv2-client/core/window-manager',[
             return true;
         }
         _onBeforeUnload(ev) {
-            if (b.getConfig('ShowQuitWarning')) {
-                return a._('MSG_SESSION_WARNING');
+            if (Config.getConfig('ShowQuitWarning')) {
+                return Locales._('MSG_SESSION_WARNING');
             }
             return null;
         }
@@ -7767,7 +7785,7 @@ define('skylark-osjsv2-client/core/window-manager',[
                 message: message
             };
             console.warn('window::onerror()', arguments);
-            OSjs.error(a._('ERR_JAVASCRIPT_EXCEPTION'), a._('ERR_JAVACSRIPT_EXCEPTION_DESC'), a._('BUGREPORT_MSG'), exception, true);
+            OSjs.error(Locales._('ERR_JAVASCRIPT_EXCEPTION'), Locales._('ERR_JAVACSRIPT_EXCEPTION_DESC'), Locales._('BUGREPORT_MSG'), exception, true);
             return false;
         }
         getDefaultSetting() {
@@ -8402,7 +8420,7 @@ define('skylark-osjsv2-client/gui/element',[
     '../utils/gui',
     '../core/locales',
     '../core/package-manager'
-], function (DOM, GUI, a, PackageManager) {
+], function (DOM, GUI, Locales, PackageManager) {
     'use strict';
     let REGISTRY = {};
     function getFocusElement(inst) {
@@ -8420,7 +8438,7 @@ define('skylark-osjsv2-client/gui/element',[
     }
     function parseDynamic(node, win, args) {
         args = args || {};
-        const translator = args.undefined || a._;
+        const translator = args.undefined || Locales._;
         node.querySelectorAll('*[data-label]').forEach(function (el) {
             const label = translator(el.getAttribute('data-label'));
             el.setAttribute('data-label', label);
@@ -8434,7 +8452,7 @@ define('skylark-osjsv2-client/gui/element',[
         node.querySelectorAll('gui-button').forEach(function (el) {
             const label = GUI.getValueLabel(el);
             if (label) {
-                el.appendChild(document.createTextNode(a._(label)));
+                el.appendChild(document.createTextNode(Locales._(label)));
             }
         });
         node.querySelectorAll('*[data-icon], *[data-stock-icon]').forEach(function (el) {
@@ -8713,7 +8731,7 @@ define('skylark-osjsv2-client/gui/scheme',[
     '../utils/dom',
     './element',
     '../core/config'
-], function (axios, DOM, GUIElement, a) {
+], function (axios, DOM, GUIElement, Config) {
     'use strict';
     function addChildren(frag, root, before) {
         if (frag) {
@@ -8797,7 +8815,7 @@ define('skylark-osjsv2-client/gui/scheme',[
             wrapper.innerHTML = html;
             doc.appendChild(wrapper);
             this.scheme = doc.cloneNode(true);
-            if (a.getConfig('DebugScheme')) {
+            if (Config.getConfig('DebugScheme')) {
                 console.group('Scheme::_load() validation', src);
                 this.scheme.querySelectorAll('*').forEach(node => {
                     const tagName = node.tagName.toLowerCase();
@@ -8835,7 +8853,7 @@ define('skylark-osjsv2-client/gui/scheme',[
             console.debug('GUIScheme::load()', this.url);
             let src = this.url;
             if (src.substr(0, 1) !== '/' && !src.match(/^(https?|ftp)/)) {
-                src = a.getBrowserPath(src);
+                src = Config.getBrowserPath(src);
             }
             axios({
                 url: src,
@@ -8931,7 +8949,7 @@ define('skylark-osjsv2-client/gui/menu',[
     './element',
     '../core/window-manager',
     '../helpers/hooks'
-], function (GUI, DOM, Events, GUIElement, WindowManager, a) {
+], function (GUI, DOM, Events, GUIElement, WindowManager, Hooks) {
     'use strict';
     let lastMenu;
     function clickWrapper(ev, pos, onclick, original) {
@@ -8992,7 +9010,7 @@ define('skylark-osjsv2-client/gui/menu',[
             lastMenu(ev);
         }
         lastMenu = null;
-        a.triggerHook('menuBlur');
+        Hooks.triggerHook('menuBlur');
     }
     function create(items, ev, customInstance) {
         items = items || [];
@@ -10606,7 +10624,7 @@ define('skylark-osjsv2-client/core/dialog',[
     '../gui/scheme',
     './locales',
     "../dialogs.html"
-], function (a, Keycodes, Window, Application, WindowManager, GUIScheme, b,dialogsHtml) {
+], function (Dom, Keycodes, Window, Application, WindowManager, GUIScheme, Locales,dialogsHtml) {
     'use strict';
     return class DialogWindow extends Window {
         constructor(className, opts, args, callback) {
@@ -10668,8 +10686,8 @@ define('skylark-osjsv2-client/core/dialog',[
                     node.querySelectorAll('gui-label').forEach(el => {
                         if (el.childNodes.length && el.childNodes[0].nodeType === 3 && el.childNodes[0].nodeValue) {
                             const label = el.childNodes[0].nodeValue;
-                            a.$empty(el);
-                            el.appendChild(document.createTextNode(b._(label)));
+                            Dom.$empty(el);
+                            el.appendChild(document.createTextNode(Locales._(label)));
                         }
                     });
                 });
@@ -10686,7 +10704,7 @@ define('skylark-osjsv2-client/core/dialog',[
                     btn.focus();
                 }
             });
-            a.$addClass(root, 'DialogWindow');
+            Dom.$addClass(root, 'DialogWindow');
             return root;
         }
         onClose(ev, button) {
@@ -10705,7 +10723,7 @@ define('skylark-osjsv2-client/core/dialog',[
             }
         }
         static parseMessage(msg) {
-            msg = a.$escape(msg || '').replace(/\*\*(.*)\*\*/g, '<span>$1</span>');
+            msg = Dom.$escape(msg || '').replace(/\*\*(.*)\*\*/g, '<span>$1</span>');
             let tmp = document.createElement('div');
             tmp.innerHTML = msg;
             const frag = document.createDocumentFragment();
@@ -10955,13 +10973,13 @@ define('skylark-osjsv2-client/gui/notification',[
 define('skylark-osjsv2-client/dialogs/alert',[
     '../core/dialog',
     '../core/locales'
-], function (DialogWindow, a) {
+], function (DialogWindow, Locales) {
     'use strict';
     return class AlertDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('AlertDialog', {
-                title: args.title || a._('DIALOG_ALERT_TITLE'),
+                title: args.title || Locales._('DIALOG_ALERT_TITLE'),
                 icon: 'status/dialog-warning.png',
                 width: 400,
                 height: 100
@@ -10981,20 +10999,20 @@ define('skylark-osjsv2-client/dialogs/applicationchooser',[
     '../core/theme',
     '../utils/misc',
     '../core/locales'
-], function (DialogWindow, PackageManager, Theme, Utils, a) {
+], function (DialogWindow, PackageManager, Theme, Utils, Locales) {
     'use strict';
     return class ApplicationChooserDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('ApplicationChooserDialog', {
-                title: args.title || a._('DIALOG_APPCHOOSER_TITLE'),
+                title: args.title || Locales._('DIALOG_APPCHOOSER_TITLE'),
                 width: 400,
                 height: 400
             }, args, callback);
         }
         init() {
             const root = super.init(...arguments);
-            const cols = [{ label: a._('LBL_NAME') }];
+            const cols = [{ label: Locales._('LBL_NAME') }];
             const rows = [];
             const metadata = PackageManager.getPackages();
             (this.args.list || []).forEach(name => {
@@ -11021,7 +11039,7 @@ define('skylark-osjsv2-client/dialogs/applicationchooser',[
             let label = '<unknown mime>';
             if (this.args.file) {
                 file = Utils.format('{0} ({1})', this.args.file.filename, this.args.file.mime);
-                label = a._('DIALOG_APPCHOOSER_SET_DEFAULT', this.args.file.mime);
+                label = Locales._('DIALOG_APPCHOOSER_SET_DEFAULT', this.args.file.mime);
             }
             this._find('FileName').set('value', file);
             this._find('SetDefault').set('label', label);
@@ -11036,7 +11054,7 @@ define('skylark-osjsv2-client/dialogs/applicationchooser',[
                     result = selected[0].data.className;
                 }
                 if (!result) {
-                    DialogWindow.create('Alert', { message: a._('DIALOG_APPCHOOSER_NO_SELECTION') }, null, this);
+                    DialogWindow.create('Alert', { message: Locales._('DIALOG_APPCHOOSER_NO_SELECTION') }, null, this);
                     return;
                 }
                 result = {
@@ -11097,7 +11115,7 @@ define('skylark-osjsv2-client/dialogs/color',[
     '../utils/misc',
     '../utils/colors',
     '../core/locales'
-], function (DialogWindow, Utils, Colors, a) {
+], function (DialogWindow, Utils, Colors, Locales) {
     'use strict';
     function getColor(rgb) {
         let hex = rgb;
@@ -11131,7 +11149,7 @@ define('skylark-osjsv2-client/dialogs/color',[
             args = Object.assign({}, {}, args);
             const [rgb, hex] = getColor(args.color);
             super('ColorDialog', {
-                title: args.title || a._('DIALOG_COLOR_TITLE'),
+                title: args.title || Locales._('DIALOG_COLOR_TITLE'),
                 icon: 'apps/preferences-desktop-theme.png',
                 width: 400,
                 height: rgb.a !== null ? 300 : 220
@@ -11147,10 +11165,10 @@ define('skylark-osjsv2-client/dialogs/color',[
         init() {
             const root = super.init(...arguments);
             const updateHex = update => {
-                this._find('LabelRed').set('value', a._('DIALOG_COLOR_R', this.color.r));
-                this._find('LabelGreen').set('value', a._('DIALOG_COLOR_G', this.color.g));
-                this._find('LabelBlue').set('value', a._('DIALOG_COLOR_B', this.color.b));
-                this._find('LabelAlpha').set('value', a._('DIALOG_COLOR_A', this.color.a));
+                this._find('LabelRed').set('value', Locales._('DIALOG_COLOR_R', this.color.r));
+                this._find('LabelGreen').set('value', Locales._('DIALOG_COLOR_G', this.color.g));
+                this._find('LabelBlue').set('value', Locales._('DIALOG_COLOR_B', this.color.b));
+                this._find('LabelAlpha').set('value', Locales._('DIALOG_COLOR_A', this.color.a));
                 if (update) {
                     this.color.hex = Colors.convertToHEX(this.color.r, this.color.g, this.color.b);
                 }
@@ -11198,7 +11216,7 @@ define('skylark-osjsv2-client/dialogs/color',[
 define('skylark-osjsv2-client/dialogs/confirm',[
     '../core/dialog',
     '../core/locales'
-], function (DialogWindow, a) {
+], function (DialogWindow, Locales) {
     'use strict';
     return class ConfirmDialog extends DialogWindow {
         constructor(args, callback) {
@@ -11210,7 +11228,7 @@ define('skylark-osjsv2-client/dialogs/confirm',[
                 ]
             }, args);
             super('ConfirmDialog', {
-                title: args.title || a._('DIALOG_CONFIRM_TITLE'),
+                title: args.title || Locales._('DIALOG_CONFIRM_TITLE'),
                 icon: 'status/dialog-question.png',
                 width: 400,
                 height: 100
@@ -11246,7 +11264,7 @@ define('skylark-osjsv2-client/dialogs/error',[
     '../core/dialog',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, a, b) {
+], function (DialogWindow, Locales, Config) {
     'use strict';
     return class ErrorDialog extends DialogWindow {
         constructor(args, callback) {
@@ -11267,7 +11285,7 @@ define('skylark-osjsv2-client/dialogs/error',[
                 }
             }
             super('ErrorDialog', {
-                title: args.title || a._('DIALOG_ERROR_TITLE'),
+                title: args.title || Locales._('DIALOG_ERROR_TITLE'),
                 icon: 'status/dialog-error.png',
                 width: 400,
                 height: error ? 400 : 200
@@ -11291,7 +11309,7 @@ define('skylark-osjsv2-client/dialogs/error',[
                 this._find('ButtonBugReport').on('click', () => {
                     let title = '';
                     let body = [];
-                    if (b.getConfig('BugReporting.options.issue')) {
+                    if (Config.getConfig('BugReporting.options.issue')) {
                         const obj = {};
                         const keys = [
                             'userAgent',
@@ -11302,9 +11320,9 @@ define('skylark-osjsv2-client/dialogs/error',[
                         keys.forEach(k => {
                             obj[k] = navigator[k];
                         });
-                        title = b.getConfig('BugReporting.options.title');
+                        title = Config.getConfig('BugReporting.options.title');
                         body = [
-                            '**' + b.getConfig('BugReporting.options.message').replace('%VERSION%', b.getConfig('Version')) + ':**',
+                            '**' + Config.getConfig('BugReporting.options.message').replace('%VERSION%', Config.getConfig('Version')) + ':**',
                             '\n',
                             '> ' + this.args.message,
                             '\n',
@@ -11324,7 +11342,7 @@ define('skylark-osjsv2-client/dialogs/error',[
                             body.push('\n## Stack Trace \n```\n' + this.traceMessage + '\n```\n');
                         }
                     }
-                    const url = b.getConfig('BugReporting.url').replace('%TITLE%', encodeURIComponent(title)).replace('%BODY%', encodeURIComponent(body.join('\n')));
+                    const url = Config.getConfig('BugReporting.url').replace('%TITLE%', encodeURIComponent(title)).replace('%BODY%', encodeURIComponent(body.join('\n')));
                     window.open(url);
                 });
             } else {
@@ -11338,13 +11356,13 @@ define('skylark-osjsv2-client/dialogs/fileinfo',[
     '../core/dialog',
     '../vfs/fs',
     '../core/locales'
-], function (DialogWindow, VFS, a) {
+], function (DialogWindow, VFS, Locales) {
     'use strict';
     return class FileInfoDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('FileInfoDialog', {
-                title: args.title || a._('DIALOG_FILEINFO_TITLE'),
+                title: args.title || Locales._('DIALOG_FILEINFO_TITLE'),
                 width: 400,
                 height: 400
             }, args, callback);
@@ -11354,7 +11372,7 @@ define('skylark-osjsv2-client/dialogs/fileinfo',[
         }
         init() {
             const root = super.init(...arguments);
-            const txt = this._find('Info').set('value', a._('LBL_LOADING'));
+            const txt = this._find('Info').set('value', Locales._('LBL_LOADING'));
             const file = this.args.file;
             VFS.fileinfo(file).then(data => {
                 const info = [];
@@ -11368,7 +11386,7 @@ define('skylark-osjsv2-client/dialogs/fileinfo',[
                 txt.set('value', info.join('\n\n'));
                 return true;
             }).catch(error => {
-                txt.set('value', a._('DIALOG_FILEINFO_ERROR_LOOKUP_FMT', file.path));
+                txt.set('value', Locales._('DIALOG_FILEINFO_ERROR_LOOKUP_FMT', file.path));
             });
             return root;
         }
@@ -11385,14 +11403,14 @@ define('skylark-osjsv2-client/dialogs/file',[
     '../vfs/fs',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, GUIElement, FileMetadata, SettingsManager, MountManager, FS, Utils, VFS, a, b) {
+], function (DialogWindow, GUIElement, FileMetadata, SettingsManager, MountManager, FS, Utils, VFS, Locales, Config) {
     'use strict';
     return class FileDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {
                 file: null,
                 type: 'open',
-                path: b.getDefaultPath(),
+                path: Config.getDefaultPath(),
                 filename: '',
                 filetypes: [],
                 extension: '',
@@ -11416,7 +11434,7 @@ define('skylark-osjsv2-client/dialogs/file',[
                     args.mime = setTo.mime;
                 }
             }
-            const title = args.title || a._(args.type === 'save' ? 'DIALOG_FILE_SAVE' : 'DIALOG_FILE_OPEN');
+            const title = args.title || Locales._(args.type === 'save' ? 'DIALOG_FILE_SAVE' : 'DIALOG_FILE_OPEN');
             const icon = args.type === 'open' ? 'actions/document-open.png' : 'actions/documentsave-as.png';
             super('FileDialog', {
                 title: title,
@@ -11458,7 +11476,7 @@ define('skylark-osjsv2-client/dialogs/file',[
             filename.set('value', this.args.filename || '');
             this._find('ButtonMkdir').on('click', () => {
                 DialogWindow.create('Input', {
-                    message: a._('DIALOG_FILE_MKDIR_MSG', this.path),
+                    message: Locales._('DIALOG_FILE_MKDIR_MSG', this.path),
                     value: 'New folder'
                 }, (ev, btn, value) => {
                     if (btn === 'ok' && value) {
@@ -11466,13 +11484,13 @@ define('skylark-osjsv2-client/dialogs/file',[
                         VFS.mkdir(new FileMetadata(path, 'dir')).then(() => {
                             return this.changePath(path);
                         }).catch(err => {
-                            OSjs.error(a._('DIALOG_FILE_ERROR'), a._('ERR_VFSMODULE_MKDIR'), err);
+                            OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('ERR_VFSMODULE_MKDIR'), err);
                         });
                     }
                 }, this);
             });
             home.on('click', () => {
-                const dpath = b.getDefaultPath();
+                const dpath = Config.getDefaultPath();
                 this.changePath(dpath);
             });
             view.on('activate', ev => {
@@ -11543,7 +11561,7 @@ define('skylark-osjsv2-client/dialogs/file',[
                 return this.args.mfilter.every(fn => fn(m));
             }).map(m => {
                 return {
-                    label: m.option('title') + (m.isReadOnly() ? Utils.format(' ({0})', a._('LBL_READONLY')) : ''),
+                    label: m.option('title') + (m.isReadOnly() ? Utils.format(' ({0})', Locales._('LBL_READONLY')) : ''),
                     value: m.option('root')
                 };
             });
@@ -11621,7 +11639,7 @@ define('skylark-osjsv2-client/dialogs/file',[
             if (this.args.type === 'save') {
                 let check = this.checkFileExtension();
                 if (!this.path || !check.filename) {
-                    OSjs.error(a._('DIALOG_FILE_ERROR'), a._('DIALOG_FILE_MISSING_FILENAME'));
+                    OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('DIALOG_FILE_MISSING_FILENAME'));
                     return false;
                 }
                 this.selected = new FileMetadata(this.path.replace(/^\//, '') + '/' + check.filename, check.mime);
@@ -11639,7 +11657,7 @@ define('skylark-osjsv2-client/dialogs/file',[
                                     'yes',
                                     'no'
                                 ],
-                                message: a._('DIALOG_FILE_OVERWRITE', this.selected.filename)
+                                message: Locales._('DIALOG_FILE_OVERWRITE', this.selected.filename)
                             }, (ev, button) => {
                                 this._toggleDisabled(false);
                                 if (button === 'yes' || button === 'ok') {
@@ -11656,12 +11674,12 @@ define('skylark-osjsv2-client/dialogs/file',[
                     if (this._destroyed) {
                         return;
                     }
-                    OSjs.error(a._('DIALOG_FILE_ERROR'), a._('DIALOG_FILE_MISSING_FILENAME'));
+                    OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('DIALOG_FILE_MISSING_FILENAME'));
                 });
                 return false;
             } else {
                 if (!this.selected && this.args.select !== 'dir') {
-                    OSjs.error(a._('DIALOG_FILE_ERROR'), a._('DIALOG_FILE_MISSING_SELECTION'));
+                    OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('DIALOG_FILE_MISSING_SELECTION'));
                     return false;
                 }
                 let res = this.selected;
@@ -11687,13 +11705,13 @@ define('skylark-osjsv2-client/dialogs/file',[
 define('skylark-osjsv2-client/dialogs/fileprogress',[
     '../core/dialog',
     '../core/locales'
-], function (DialogWindow, a) {
+], function (DialogWindow, Locales) {
     'use strict';
     return class FileProgressDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('FileProgressDialog', {
-                title: args.title || a._('DIALOG_FILEPROGRESS_TITLE'),
+                title: args.title || Locales._('DIALOG_FILEPROGRESS_TITLE'),
                 icon: 'actions/document-send.png',
                 width: 400,
                 height: 100
@@ -11737,12 +11755,12 @@ define('skylark-osjsv2-client/dialogs/fileupload',[
     '../vfs/fs',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, VFS, a, b) {
+], function (DialogWindow, VFS, Locales, Config) {
     'use strict';
     return class FileUploadDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {
-                dest: b.getDefaultPath(),
+                dest: Config.getDefaultPath(),
                 progress: {},
                 file: null
             }, args);
@@ -11750,10 +11768,10 @@ define('skylark-osjsv2-client/dialogs/fileupload',[
                 args.dest = args.destination;
             }
             if (!args.dest) {
-                args.dest = b.getDefaultPath();
+                args.dest = Config.getDefaultPath();
             }
             super('FileUploadDialog', {
-                title: args.title || a._('DIALOG_UPLOAD_TITLE'),
+                title: args.title || Locales._('DIALOG_UPLOAD_TITLE'),
                 icon: 'actions/document-new.png',
                 width: 400,
                 height: 100
@@ -11762,8 +11780,8 @@ define('skylark-osjsv2-client/dialogs/fileupload',[
         init() {
             const root = super.init(...arguments);
             const message = this._find('Message');
-            const maxSize = b.getConfig('VFS.MaxUploadSize');
-            message.set('value', a._('DIALOG_UPLOAD_DESC', this.args.dest, maxSize), true);
+            const maxSize = Config.getConfig('VFS.MaxUploadSize');
+            message.set('value', Locales._('DIALOG_UPLOAD_DESC', this.args.dest, maxSize), true);
             const input = this._find('File');
             if (this.args.file) {
                 this.setFile(this.args.file, input);
@@ -11777,7 +11795,7 @@ define('skylark-osjsv2-client/dialogs/fileupload',[
         setFile(file, input) {
             let progressDialog;
             const error = (msg, ev) => {
-                OSjs.error(a._('DIALOG_UPLOAD_FAILED'), a._('DIALOG_UPLOAD_FAILED_MSG'), msg || a._('DIALOG_UPLOAD_FAILED_UNKNOWN'));
+                OSjs.error(Locales._('DIALOG_UPLOAD_FAILED'), Locales._('DIALOG_UPLOAD_FAILED_MSG'), msg || Locales._('DIALOG_UPLOAD_FAILED_UNKNOWN'));
                 progressDialog._close(true);
                 this.onClose(ev, 'cancel');
             };
@@ -11792,7 +11810,7 @@ define('skylark-osjsv2-client/dialogs/fileupload',[
                     input.set('disabled', true);
                 }
                 this._find('ButtonCancel').set('disabled', true);
-                const desc = a._('DIALOG_UPLOAD_MSG_FMT', file.name, file.type, fileSize, this.args.dest);
+                const desc = Locales._('DIALOG_UPLOAD_MSG_FMT', file.name, file.type, fileSize, this.args.dest);
                 progressDialog = DialogWindow.create('FileProgress', {
                     message: desc,
                     dest: this.args.dest,
@@ -11832,16 +11850,16 @@ define('skylark-osjsv2-client/dialogs/font',[
     '../core/dialog',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, a, b) {
+], function (DialogWindow, Locales, Config) {
     'use strict';
     return class FontDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {
-                fontName: b.getConfig('Fonts.default'),
+                fontName: Config.getConfig('Fonts.default'),
                 fontSize: 12,
                 fontColor: '#000000',
                 backgroundColor: '#ffffff',
-                fonts: b.getConfig('Fonts.list'),
+                fonts: Config.getConfig('Fonts.list'),
                 minSize: 6,
                 maxSize: 30,
                 text: 'The quick brown fox jumps over the lazy dog',
@@ -11851,7 +11869,7 @@ define('skylark-osjsv2-client/dialogs/font',[
                 args.unit = '';
             }
             super('FontDialog', {
-                title: args.title || a._('DIALOG_FONT_TITLE'),
+                title: args.title || Locales._('DIALOG_FONT_TITLE'),
                 width: 400,
                 height: 300
             }, args, callback);
@@ -11911,13 +11929,13 @@ define('skylark-osjsv2-client/dialogs/font',[
 define('skylark-osjsv2-client/dialogs/input',[
     '../core/dialog',
     '../core/locales'
-], function (DialogWindow, a) {
+], function (DialogWindow, Locales) {
     'use strict';
     return class InputDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('InputDialog', {
-                title: args.title || a._('DIALOG_INPUT_TITLE'),
+                title: args.title || Locales._('DIALOG_INPUT_TITLE'),
                 icon: 'status/dialog-information.png',
                 width: 400,
                 height: 120
@@ -11959,7 +11977,7 @@ define('skylark-osjsv2-client/dialogs/input',[
 define('skylark-osjsv2-client/vfs/transport',[
     'skylark-axios',
     '../core/locales'
-], function (axios, a) {
+], function (axios, Locales) {
     'use strict';
     return class Transport {
         request(method, args, options, mount) {
@@ -11975,7 +11993,7 @@ define('skylark-osjsv2-client/vfs/transport',[
             ];
             if (mount.isReadOnly()) {
                 if (readOnly.indexOf(method) !== -1) {
-                    return Promise.reject(new Error(a._('ERR_VFSMODULE_READONLY')));
+                    return Promise.reject(new Error(Locales._('ERR_VFSMODULE_READONLY')));
                 }
             }
             const newArgs = args.concat([
@@ -11985,34 +12003,34 @@ define('skylark-osjsv2-client/vfs/transport',[
             return this[method](...newArgs);
         }
         scandir(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         read(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         write(file, data, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         unlink(src, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         copy(src, dest, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         move(src, dest, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         exists(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         fileinfo(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         mkdir(dir, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         upload(file, dest, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         download(item, options, mount) {
             return new Promise((resolve, reject) => {
@@ -12030,22 +12048,22 @@ define('skylark-osjsv2-client/vfs/transport',[
             });
         }
         url(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         find(file, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         trash(file, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         untrash(file, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         emptyTrash(options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         freeSpace(root, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
     };
 });
@@ -12143,7 +12161,7 @@ define('skylark-osjsv2-client/vfs/transports/osjs',[
     '../transport',
     '../../core/config',
     '../../core/locales'
-], function (FileMetadata, FS, Connection, Transport, a, b) {
+], function (FileMetadata, FS, Connection, Transport, Config, Locales) {
     'use strict';
     return class OSjsTransport extends Transport {
         _request(method, args, options) {
@@ -12153,11 +12171,11 @@ define('skylark-osjsv2-client/vfs/transports/osjs',[
             options = options || {};
             dest = dest instanceof FileMetadata ? dest.path : dest;
             if (typeof file.size !== 'undefined') {
-                const maxSize = a.getConfig('VFS.MaxUploadSize');
+                const maxSize = Config.getConfig('VFS.MaxUploadSize');
                 if (maxSize > 0) {
                     const bytes = file.size;
                     if (bytes > maxSize) {
-                        const msg = b._('DIALOG_UPLOAD_TOO_BIG_FMT', FS.humanFileSize(maxSize));
+                        const msg = Locales._('DIALOG_UPLOAD_TOO_BIG_FMT', FS.humanFileSize(maxSize));
                         return Promise.reject(new Error(msg));
                     }
                 }
@@ -12244,13 +12262,13 @@ define('skylark-osjsv2-client/vfs/transports/osjs',[
             });
         }
         trash(file) {
-            return Promise.reject(new Error(b._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         untrash(file) {
-            return Promise.reject(new Error(b._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         emptyTrash() {
-            return Promise.reject(new Error(b._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         freeSpace(root) {
             return this._request('freeSpace', { root: root });
@@ -12262,7 +12280,7 @@ define('skylark-osjsv2-client/vfs/transports/dist',[
     '../../core/mount-manager',
     '../../core/config',
     '../../core/locales'
-], function ( OSjsTransport, MountManager, a, b) {
+], function ( OSjsTransport, MountManager, Config, Locales) {
     'use strict';
     return class DistTransport extends OSjsTransport {
         request(method, args, options) {
@@ -12271,12 +12289,12 @@ define('skylark-osjsv2-client/vfs/transports/dist',[
                     'scandir',
                     'read'
                 ].indexOf(method) === -1) {
-                return Promise.reject(new Error(b._('ERR_VFS_UNAVAILABLE')));
+                return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
             }
             return super.request(...arguments);
         }
         url(item) {
-            const root = a.getBrowserPath();
+            const root = Config.getBrowserPath();
             const module = MountManager.getModuleFromPath(item.path);
             const url = item.path.replace(module.option('match'), root).replace(/^\/+/, '/');
             return Promise.resolve(url);
@@ -12288,12 +12306,12 @@ define('skylark-osjsv2-client/vfs/transports/applications',[
     '../transport',
     '../file',
     '../../core/locales'
-], function ( PackageManager, Transport, FileMetadata, a) {
+], function ( PackageManager, Transport, FileMetadata, Locales) {
     'use strict';
     return class ApplicationTransport extends Transport {
         request(method, args, options) {
             if (['scandir'].indexOf(method) === -1) {
-                return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+                return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
             }
             return super.request(...arguments);
         }
@@ -12327,7 +12345,7 @@ define('skylark-osjsv2-client/vfs/transports/webdav',[
     '../file',
     '../../core/config',
     '../../core/locales'
-], function (axios, Connection, FS, Utils, Transport, FileMetadata, a, b) {
+], function (axios, Connection, FS, Utils, Transport, FileMetadata, Config, Locales) {
     'use strict';
     function getTargetPath(item, mount) {
         return item.path.replace(mount.option('match'), '');
@@ -12454,7 +12472,7 @@ define('skylark-osjsv2-client/vfs/transports/webdav',[
                     Connection.request('curl', copts).then(response => {
                         const code = response.httpCode;
                         if (!response) {
-                            return reject(new Error(b._('ERR_VFS_REMOTEREAD_EMPTY')));
+                            return reject(new Error(Locales._('ERR_VFS_REMOTEREAD_EMPTY')));
                         } else if ([
                                 200,
                                 201,
@@ -12463,7 +12481,7 @@ define('skylark-osjsv2-client/vfs/transports/webdav',[
                                 205,
                                 207
                             ].indexOf(code) < 0) {
-                            const error = new Error(b._('ERR_VFSMODULE_XHR_ERROR') + ': ' + code);
+                            const error = new Error(Locales._('ERR_VFSMODULE_XHR_ERROR') + ': ' + code);
                             error.httpCode = code;
                             return reject(error);
                         }
@@ -12533,7 +12551,7 @@ define('skylark-osjsv2-client/vfs/transports/webdav',[
             const moduleOptions = mount.option('options') || {};
             let requestUrl = getTargetUrl(mount, item, moduleOptions);
             if (!moduleOptions.cors) {
-                requestUrl = a.getConfig('Connection.FSURI') + '/read?path=' + encodeURIComponent(requestUrl);
+                requestUrl = Config.getConfig('Connection.FSURI') + '/read?path=' + encodeURIComponent(requestUrl);
             }
             return Promise.resolve(requestUrl);
         }
@@ -12547,7 +12565,7 @@ define('skylark-osjsv2-client/helpers/service-notification-icon',[
     '../core/theme',
     '../gui/menu',
     '../core/locales'
-], function (Notification, Theme, Menu, a) {
+], function (Notification, Theme, Menu, Locales) {
     'use strict';
     class ServiceNotificationIcon {
         constructor() {
@@ -12581,7 +12599,7 @@ define('skylark-osjsv2-client/helpers/service-notification-icon',[
                 if (this.notif.$container) {
                     this.notif.$container.style.display = this.size ? 'inline-block' : 'none';
                 }
-                this.notif.setTitle(a._('SERVICENOTIFICATION_TOOLTIP', this.size.toString()));
+                this.notif.setTitle(Locales._('SERVICENOTIFICATION_TOOLTIP', this.size.toString()));
             }
         }
         displayMenu(ev) {
@@ -12814,7 +12832,7 @@ define('skylark-osjsv2-client/helpers/google-api',[
     '../core/locales',
     '../core/config',
     './then-jsonp'
-], function (MountManager, ServiceNotificationIcon, Preloader, a, b, jsonp) {
+], function (MountManager, ServiceNotificationIcon, Preloader, Locales, b, jsonp) {
     'use strict';
     const gapi = window.gapi = window.gapi || {};
     let SingletonInstance = null;
@@ -12854,7 +12872,7 @@ define('skylark-osjsv2-client/helpers/google-api',[
                         cb(error);
                     } else {
                         if (!this.authenticated) {
-                            cb(a._('GAPI_AUTH_FAILURE'));
+                            cb(Locales._('GAPI_AUTH_FAILURE'));
                             return;
                         }
                         cb(false, result);
@@ -12911,7 +12929,7 @@ define('skylark-osjsv2-client/helpers/google-api',[
                     return;
                 }
                 if (!window.gapi || !gapi.load) {
-                    callback(a._('GAPI_LOAD_FAILURE'));
+                    callback(Locales._('GAPI_LOAD_FAILURE'));
                     return;
                 }
                 auth(error => {
@@ -12980,13 +12998,13 @@ define('skylark-osjsv2-client/helpers/google-api',[
                 ServiceNotificationIcon.remove('Google API');
                 ServiceNotificationIcon.add('Google API', [
                     {
-                        title: a._('GAPI_SIGN_OUT'),
+                        title: Locales._('GAPI_SIGN_OUT'),
                         onClick: () => {
                             this.signOut();
                         }
                     },
                     {
-                        title: a._('GAPI_REVOKE'),
+                        title: Locales._('GAPI_REVOKE'),
                         onClick: () => {
                             this.revoke(() => {
                                 this.signOut();
@@ -12999,7 +13017,7 @@ define('skylark-osjsv2-client/helpers/google-api',[
                 console.info('GoogleAPI::authenticate() => handleAuthResult()', authResult);
                 if (authResult.error) {
                     if (authResult.error_subtype === 'origin_mismatch' || authResult.error_subtype === 'access_denied' && !immediate) {
-                        const msg = a._('GAPI_AUTH_FAILURE_FMT', authResult.error, authResult.error_subtype);
+                        const msg = Locales._('GAPI_AUTH_FAILURE_FMT', authResult.error, authResult.error_subtype);
                         callback(msg);
                         return;
                     }
@@ -13024,7 +13042,7 @@ define('skylark-osjsv2-client/helpers/google-api',[
             };
             gapi.load('auth:client', result => {
                 if (result && result.error) {
-                    const msg = a._('GAPI_AUTH_FAILURE_FMT', result.error, result.error_subtype);
+                    const msg = Locales._('GAPI_AUTH_FAILURE_FMT', result.error, result.error_subtype);
                     callback(msg);
                     return;
                 }
@@ -13055,7 +13073,7 @@ define('skylark-osjsv2-client/helpers/google-api',[
             console.warn('getGoogleAPI()', e, e.stack);
         }
         if (!clientId) {
-            callback(a._('GAPI_DISABLED'));
+            callback(Locales._('GAPI_DISABLED'));
             return;
         }
         SingletonInstance = new GoogleAPI(clientId);
@@ -13075,7 +13093,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
     '../../core/locales',
     '../../helpers/google-api',
     '../../utils/fs'
-], function (axios, Transport, FileMetadata, FileDataURL, MountManager, a, GoogleAPI, FS) {
+], function (axios, Transport, FileMetadata, FileDataURL, MountManager, Locales, GoogleAPI, FS) {
     'use strict';
     const CACHE_CLEAR_TIMEOUT = 7000;
     let gapi = window.gapi = window.gapi || {};
@@ -13260,7 +13278,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
             const request = gapi.client.drive.about.get();
             request.execute(resp => {
                 if (!resp || !resp.rootFolderId) {
-                    callback(a._('ERR_VFSMODULE_ROOT_ID'));
+                    callback(Locales._('ERR_VFSMODULE_ROOT_ID'));
                     return;
                 }
                 _rootFolderId = resp.rootFolderId;
@@ -13433,10 +13451,10 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         }).then(response => {
                             return resolve(response.data);
                         }).catch(error => {
-                            reject(new Error(a._('ERR_VFSMODULE_XHR_ERROR') + ' - ' + error.message));
+                            reject(new Error(Locales._('ERR_VFSMODULE_XHR_ERROR') + ' - ' + error.message));
                         });
                     } else {
-                        reject(new Error(a._('ERR_VFSMODULE_NOSUCH')));
+                        reject(new Error(Locales._('ERR_VFSMODULE_NOSUCH')));
                     }
                 });
             });
@@ -13448,7 +13466,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         if (error) {
                             reject(new Error(error));
                         } else if (!response) {
-                            reject(new Error(a._('ERR_VFSMODULE_NOSUCH')));
+                            reject(new Error(Locales._('ERR_VFSMODULE_NOSUCH')));
                         } else {
                             read(response).then(resolve).catch(reject);
                         }
@@ -13486,7 +13504,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                                     resolve(true);
                                 }
                             } else {
-                                reject(a._('ERR_VFSMODULE_NOSUCH'));
+                                reject(Locales._('ERR_VFSMODULE_NOSUCH'));
                             }
                         });
                     }
@@ -13528,7 +13546,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                             }
                         });
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -13545,7 +13563,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         _treeCache = null;
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -13589,7 +13607,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         });
                         resolve(info);
                     } else {
-                        reject(a._('ERR_VFSMODULE_NOSUCH'));
+                        reject(Locales._('ERR_VFSMODULE_NOSUCH'));
                     }
                 });
             });
@@ -13604,7 +13622,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         if (resp && resp.webContentLink) {
                             resolve(resp.webContentLink);
                         } else {
-                            const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                            const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                             reject(new Error(msg));
                         }
                     });
@@ -13627,7 +13645,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         _treeCache = null;
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -13639,7 +13657,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                 if (dirDest !== rootDest) {
                     getParentPathId(dir, (error, id) => {
                         if (error || !id) {
-                            reject(new Error(a._('ERR_VFSMODULE_PARENT_FMT', error || a._('ERR_VFSMODULE_PARENT'))));
+                            reject(new Error(Locales._('ERR_VFSMODULE_PARENT_FMT', error || Locales._('ERR_VFSMODULE_PARENT'))));
                         } else {
                             mkdir([{ id: id }]).then(resolve).catch(reject);
                         }
@@ -13665,7 +13683,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                     if (resp.id) {
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -13678,7 +13696,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                     if (resp.id) {
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -13689,7 +13707,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                 const request = gapi.client.drive.files.emptyTrash({});
                 request.execute(resp => {
                     if (resp && resp.message) {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     } else {
                         resolve(true);
@@ -13709,7 +13727,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         if (resp && typeof resp.result === 'object') {
                             resolve(true);
                         } else {
-                            const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                            const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                             reject(new Error(msg));
                         }
                     });
@@ -13721,7 +13739,7 @@ define('skylark-osjsv2-client/vfs/transports/google-drive',[
                         if (error) {
                             reject(new Error(error));
                         } else if (!response) {
-                            reject(new Error(a._('ERR_VFSMODULE_NOSUCH')));
+                            reject(new Error(Locales._('ERR_VFSMODULE_NOSUCH')));
                         } else {
                             unlink(response).then(resolve).catch(reject);
                         }
@@ -13738,7 +13756,7 @@ define('skylark-osjsv2-client/helpers/windows-live-api',[
     '../utils/preloader',
     '../core/locales',
     '../core/config'
-], function (MountManager, ServiceNotificationIcon, Preloader, a, b) {
+], function (MountManager, ServiceNotificationIcon, Preloader, Locales, Config) {
     'use strict';
     const redirectURI = window.location.href.replace(/\/$/, '') + '/windows-live-oauth.html';
     let SingletonInstance = null;
@@ -13797,7 +13815,7 @@ define('skylark-osjsv2-client/helpers/windows-live-api',[
                     return;
                 }
                 if (!window.WL) {
-                    callback(a._('WLAPI_LOAD_FAILURE'));
+                    callback(Locales._('WLAPI_LOAD_FAILURE'));
                     return;
                 }
                 WL = window.WL || {};
@@ -13831,7 +13849,7 @@ define('skylark-osjsv2-client/helpers/windows-live-api',[
                         } else if (result.status === 'success') {
                             _login();
                         } else {
-                            callback(a._('WLAPI_INIT_FAILED_FMT', result.status.toString()));
+                            callback(Locales._('WLAPI_INIT_FAILED_FMT', result.status.toString()));
                         }
                     }, result => {
                         console.error('WindowsLiveAPI::load()', 'init() error', result);
@@ -13872,10 +13890,10 @@ define('skylark-osjsv2-client/helpers/windows-live-api',[
                 if (result.status === 'connected') {
                     callback(false, true);
                 } else {
-                    callback(a._('WLAPI_LOGIN_FAILED'));
+                    callback(Locales._('WLAPI_LOGIN_FAILED'));
                 }
             }, result => {
-                callback(a._('WLAPI_LOGIN_FAILED_FMT', result.error_description));
+                callback(Locales._('WLAPI_LOGIN_FAILED_FMT', result.error_description));
             });
         }
         onSessionChange() {
@@ -13892,7 +13910,7 @@ define('skylark-osjsv2-client/helpers/windows-live-api',[
             console.warn('WindowsLiveAPI::onLogin()', arguments);
             this.hasSession = true;
             ServiceNotificationIcon.add('Windows Live API', [{
-                    title: a._('WLAPI_SIGN_OUT'),
+                    title: Locales._('WLAPI_SIGN_OUT'),
                     onClick: () => {
                         this.logout();
                     }
@@ -13924,12 +13942,12 @@ define('skylark-osjsv2-client/helpers/windows-live-api',[
         }
         let clientId = null;
         try {
-            clientId = b.getConfig('WindowsLiveAPI.ClientId');
+            clientId = Config.getConfig('WindowsLiveAPI.ClientId');
         } catch (e) {
             console.warn('getWindowsLiveAPI()', e, e.stack);
         }
         if (!clientId) {
-            callback(a._('WLAPI_DISABLED'));
+            callback(Locales._('WLAPI_DISABLED'));
             return;
         }
         SingletonInstance = new WindowsLiveAPI(clientId);
@@ -13949,7 +13967,7 @@ define('skylark-osjsv2-client/vfs/transports/onedrive',[
     '../../helpers/windows-live-api',
     '../../utils/fs',
     '../fs'
-], function ( Promise, Transport, FileMetadata, a, b, WindowsLiveAPI, FS, VFS) {
+], function ( Promise, Transport, FileMetadata, a, Locales, WindowsLiveAPI, FS, VFS) {
     'use strict';
     let _isMounted = false;
     let _mimeCache;
@@ -14091,7 +14109,7 @@ define('skylark-osjsv2-client/vfs/transports/onedrive',[
             if (foundId) {
                 callback(false, foundId);
             } else {
-                callback(b._('ONEDRIVE_ERR_RESOLVE'));
+                callback(Locales._('ONEDRIVE_ERR_RESOLVE'));
             }
         });
     }
@@ -14179,7 +14197,7 @@ define('skylark-osjsv2-client/vfs/transports/onedrive',[
                     if (result && result.id) {
                         return resolve(result.id);
                     }
-                    return reject(new Error(b._('ERR_APP_UNKNOWN_ERROR')));
+                    return reject(new Error(Locales._('ERR_APP_UNKNOWN_ERROR')));
                 }).catch(reject);
             });
         }
@@ -14346,7 +14364,7 @@ define('skylark-osjsv2-client/vfs/transports/dropbox',[
     '../../utils/misc',
     '../../core/locales',
     '../../utils/fs'
-], function (Transport, Preloader, a, FileMetadata, b, c, FS) {
+], function (Transport, Preloader, Config, FileMetadata, b, Locales, FS) {
     'use strict';
     const AUTH_TIMEOUT = 1000 * 30;
     const MAX_RESULTS = 100;
@@ -14367,7 +14385,7 @@ define('skylark-osjsv2-client/vfs/transports/dropbox',[
                         this.loaded = true;
                         return resolve(true);
                     }
-                    return reject(new Error(c._('ERR_DROPBOX_API')));
+                    return reject(new Error(Locales._('ERR_DROPBOX_API')));
                 }).catch(err => {
                     this.loaded = true;
                     return reject(err);
@@ -14395,21 +14413,21 @@ define('skylark-osjsv2-client/vfs/transports/dropbox',[
                         this.dbx = new window.Dropbox({ accessToken: params.access_token });
                         resolve(true);
                     } else {
-                        reject(new Error(c._('ERR_DROPBOX_AUTH')));
+                        reject(new Error(Locales._('ERR_DROPBOX_AUTH')));
                     }
                 };
                 const authUrl = this.dbx.getAuthenticationUrl(redirectUrl);
                 loginTimeout = setTimeout(() => {
                     timedOut = true;
-                    reject(new Error(c._('ERR_DROPBOX_AUTH')));
+                    reject(new Error(Locales._('ERR_DROPBOX_AUTH')));
                 }, AUTH_TIMEOUT);
                 window.open(authUrl);
             });
         }
         _init() {
-            const clientId = a.getConfig('DropboxAPI.ClientKey');
+            const clientId = Config.getConfig('DropboxAPI.ClientKey');
             if (!clientId) {
-                return Promise.reject(new Error(c._('ERR_DROPBOX_KEY')));
+                return Promise.reject(new Error(Locales._('ERR_DROPBOX_KEY')));
             }
             return new Promise((resolve, reject) => {
                 this._loadDependencies().then(() => {
@@ -14627,7 +14645,37 @@ define('skylark-osjsv2-client/core/init',[
     "../vfs/transports/dropbox"
 
 
-], function (Locales, MountManager, SettingsManager, PackageManager, SearchEngine, Authenticator, WindowManager, DialogWindow, Storage, Process, Theme, Connection, a, b, SplashScreen, Utils, Menu, Notification,Preloader, AlertDialog, ApplicationChooserDialog, ColorDialog, ConfirmDialog, ErrorDialog, FileInfoDialog, FileDialog, FileProgressDialog, FileUploadDialog, FontDialog, InputDialog,
+], function (
+    Locales, 
+    MountManager, 
+    SettingsManager, 
+    PackageManager, 
+    SearchEngine, 
+    Authenticator, 
+    WindowManager, 
+    DialogWindow, 
+    Storage, 
+    Process, 
+    Theme, 
+    Connection, 
+    Hooks, 
+    Config, 
+    SplashScreen, 
+    Utils, 
+    Menu, 
+    Notification,
+    Preloader, 
+    AlertDialog, 
+    ApplicationChooserDialog, 
+    ColorDialog, 
+    ConfirmDialog, 
+    ErrorDialog, 
+    FileInfoDialog, 
+    FileDialog, 
+    FileProgressDialog, 
+    FileUploadDialog, 
+    FontDialog, 
+    InputDialog,
     VFS,
     WebTransport,
     OsjsTransport,
@@ -14636,7 +14684,8 @@ define('skylark-osjsv2-client/core/init',[
     WebdavTransport,
     GdriveTransport,
     OnedriveTransport,
-    DropboxTransport) {
+    DropboxTransport
+) {
     'use strict';
 
    const  OSJS_DEBUG = false;
@@ -14670,7 +14719,7 @@ define('skylark-osjsv2-client/core/init',[
     let hasShutDown = false;
     function onError(title, message, error, exception, bugreport) {
         bugreport = (() => {
-            if (b.getConfig('BugReporting.enabled')) {
+            if (Config.getConfig('BugReporting.enabled')) {
                 return typeof bugreport === 'undefined' ? false : bugreport ? true : false;
             }
             return false;
@@ -14969,7 +15018,7 @@ define('skylark-osjsv2-client/core/init',[
         Locales.init(config.Locale, config.LocaleOptions, config.Languages);
         SplashScreen.watermark(config);
         SplashScreen.show();
-        a.triggerHook('initialize');
+        Hooks.triggerHook('initialize');
         Promise.each([
             initPreloading,
             initHandlers,
@@ -14996,7 +15045,7 @@ define('skylark-osjsv2-client/core/init',[
         }).then(() => {
             console.info('Done!');
             window.addEventListener('message', onMessage, false);
-            a.triggerHook('initialized');
+            Hooks.triggerHook('initialized');
             SplashScreen.hide();
             if (!testMode) {
                 Theme.playSound('LOGIN');
@@ -15005,7 +15054,7 @@ define('skylark-osjsv2-client/core/init',[
                     wm._fullyLoaded = true;
                 }
                 initSession(config).then(() => {
-                    return a.triggerHook('sessionLoaded');
+                    return Hooks.triggerHook('sessionLoaded');
                 });
             }
             return true;
@@ -15035,9 +15084,9 @@ define('skylark-osjsv2-client/core/init',[
         Authenticator.instance.destroy();
         Storage.instance.destroy();
         Connection.instance.destroy();
-        a.triggerHook('shutdown');
+        Hooks.triggerHook('shutdown');
         console.warn('OS.js was shut down!');
-        if (!restart && b.getConfig('ReloadOnShutdown') === true) {
+        if (!restart && Config.getConfig('ReloadOnShutdown') === true) {
             window.location.reload();
         }
     }
@@ -16560,7 +16609,7 @@ define('skylark-osjsv2-client/utils/pepjs',[], function () {
 define('skylark-osjsv2-client/boot',[
     './core/init',
     "./utils/pepjs"
-], function (a) {
+], function (Init) {
     'use strict';
     window.OSjs = Object.assign({
         error: (title, message, error, exception, bugreport) => {
@@ -16586,9 +16635,9 @@ define('skylark-osjsv2-client/boot',[
         //return mod && mod.default ? mod.default : mod;
     };
     if (document.readyState !== 'loading') {
-        a.start();
+        Init.start();
     } else {
-        document.addEventListener('DOMContentLoaded', () => a.start());
+        document.addEventListener('DOMContentLoaded', () => Init.start());
     }
 });
 define('skylark-osjsv2-client/locales/en_EN',[],function() {
@@ -17098,13 +17147,13 @@ define('skylark-osjsv2-client/core/connections/ws',[
     '../../vfs/fs',
     '../../vfs/file',
     '../connection'
-], function (a, b, VFS, FileMetadata, Connection) {
+], function (Config, Locales, VFS, FileMetadata, Connection) {
     'use strict';
     return class WSConnection extends Connection {
         constructor() {
             super(...arguments);
-            const port = a.getConfig('Connection.WSPort');
-            const path = a.getConfig('Connection.WSPath') || '';
+            const port = Config.getConfig('Connection.WSPort');
+            const path = Config.getConfig('Connection.WSPath') || '';
             let url = window.location.protocol.replace('http', 'ws') + '//' + window.location.host;
             if (port !== 'upgrade') {
                 if (url.match(/:\d+$/)) {
@@ -17164,7 +17213,7 @@ define('skylark-osjsv2-client/core/connections/ws',[
             this.ws.onclose = ev => {
                 console.debug('websocket close', ev);
                 if (!connected && ev.code !== 3001) {
-                    callback(b._('CONNECTION_ERROR'));
+                    callback(Locales._('CONNECTION_ERROR'));
                     return;
                 }
                 this._onclose();
@@ -17245,11 +17294,11 @@ define('skylark-osjsv2-client/core/storage/database',[
 define('skylark-osjsv2-client/core/storage/demo',[
     '../config',
     '../storage'
-], function (a, Storage) {
+], function (Config, Storage) {
     'use strict';
     return class DemoStorage extends Storage {
         init() {
-            const curr = a.getConfig('Version');
+            const curr = Config.getConfig('Version');
             const version = localStorage.getItem('__version__');
             if (curr !== version) {
                 localStorage.clear();
@@ -18532,7 +18581,24 @@ define('skylark-osjsv2-client/gui/elements/fileview',[
     '../../core/theme',
     '../../core/locales',
     '../../core/config'
-], function (FS, VFS, DOM, GUI, Utils, Events, Menu, GUIElement, GUIDataView, PackageManager, SettingsManager, FileMetadata, DateExtended, Theme, a, b) {
+], function (
+    FS, 
+    VFS, 
+    DOM, 
+    GUI, 
+    Utils, 
+    Events, 
+    Menu, 
+    GUIElement, 
+    GUIDataView, 
+    PackageManager, 
+    SettingsManager, 
+    FileMetadata, 
+    DateExtended, 
+    Theme, 
+    Locales, 
+    Config
+) {
     'use strict';
     let _iconSizes = { 'gui-icon-view': '32x32' };
     function getFileIcon(iter, size) {
@@ -18556,7 +18622,7 @@ define('skylark-osjsv2-client/gui/elements/fileview',[
         let mimeConfig;
         return (str, opts) => {
             if (!mimeConfig) {
-                mimeConfig = b.getConfig('MIME.mapping');
+                mimeConfig = Config.getConfig('MIME.mapping');
             }
             if (opts.extensions === false) {
                 let ext = FS.filext(str);
@@ -18663,7 +18729,7 @@ define('skylark-osjsv2-client/gui/elements/fileview',[
                 columns.push({
                     sortBy: key,
                     sortDir: key === sortBy ? sortDir : null,
-                    label: a._(map.label),
+                    label: Locales._(map.label),
                     size: map.size || '',
                     resizable: idx > 0,
                     textalign: idx === 0 ? 'left' : 'right'
@@ -18891,7 +18957,7 @@ define('skylark-osjsv2-client/gui/elements/fileview',[
             }
             Menu.create([
                 {
-                    title: a._('LBL_SHOW_HIDDENFILES'),
+                    title: Locales._('LBL_SHOW_HIDDENFILES'),
                     type: 'checkbox',
                     checked: scandirOptions.showHiddenFiles === true,
                     onClick: () => {
@@ -18899,7 +18965,7 @@ define('skylark-osjsv2-client/gui/elements/fileview',[
                     }
                 },
                 {
-                    title: a._('LBL_SHOW_FILEEXTENSIONS'),
+                    title: Locales._('LBL_SHOW_FILEEXTENSIONS'),
                     type: 'checkbox',
                     checked: scandirOptions.showFileExtensions === true,
                     onClick: () => {
@@ -18915,14 +18981,14 @@ define('skylark-osjsv2-client/gui/elements/fileview',[
             }
             const cb = args.done || function () {
             };
-            const dir = args.path || b.getDefaultPath();
+            const dir = args.path || Config.getDefaultPath();
             const child = childView;
             const el = this.$element;
             clearTimeout(el._readdirTimeout);
             el._readdirTimeout = setTimeout(() => {
                 readdir(this, dir, (error, result, summary) => {
                     if (error) {
-                        OSjs.error(a._('ERR_VFSMODULE_XHR_ERROR'), a._('ERR_VFSMODULE_SCANDIR_FMT', dir), error);
+                        OSjs.error(Locales._('ERR_VFSMODULE_XHR_ERROR'), Locales._('ERR_VFSMODULE_SCANDIR_FMT', dir), error);
                     } else {
                         child.clear();
                         child.add(result);
@@ -20991,7 +21057,7 @@ define('skylark-osjsv2-client/helpers/default-application-window',[
     '../core/window',
     '../core/dialog',
     '../core/locales'
-], function (FileMetadata, Window, DialogWindow, a) {
+], function (FileMetadata, Window, DialogWindow, Locales) {
     'use strict';
     return class DefaultApplicationWindow extends Window {
         constructor(name, args, app, file) {
@@ -21076,7 +21142,7 @@ define('skylark-osjsv2-client/helpers/default-application-window',[
                         'yes',
                         'no'
                     ],
-                    message: a._('MSG_GENERIC_APP_DISCARD')
+                    message: Locales._('MSG_GENERIC_APP_DISCARD')
                 }, function (ev, button) {
                     cb(button === 'ok' || button === 'yes');
                 }, {
@@ -21127,7 +21193,7 @@ define('skylark-osjsv2-client/helpers/default-application',[
     '../vfs/fs',
     '../utils/fs',
     '../core/locales'
-], function (Application, DialogWindow, FileMetadata, VFS, FS, a) {
+], function (Application, DialogWindow, FileMetadata, VFS, FS, Locales) {
     'use strict';
     return class DefaultApplication extends Application {
         constructor(name, args, metadata, opts) {
@@ -21155,7 +21221,7 @@ define('skylark-osjsv2-client/helpers/default-application',[
                             'yes',
                             'no'
                         ],
-                        message: a._('MSG_FILE_CHANGED')
+                        message: Locales._('MSG_FILE_CHANGED')
                     }, (ev, button) => {
                         if (button === 'ok' || button === 'yes') {
                             this.openFile(new FileMetadata(args.file), win);
@@ -21173,7 +21239,7 @@ define('skylark-osjsv2-client/helpers/default-application',[
             }
             const onError = error => {
                 if (error) {
-                    OSjs.error(this.__label, a._('ERR_FILE_APP_OPEN'), a._('ERR_FILE_APP_OPEN_ALT_FMT', file.path, error));
+                    OSjs.error(this.__label, Locales._('ERR_FILE_APP_OPEN'), Locales._('ERR_FILE_APP_OPEN_ALT_FMT', file.path, error));
                     return true;
                 }
                 return false;
@@ -21184,7 +21250,7 @@ define('skylark-osjsv2-client/helpers/default-application',[
             };
             const check = this.__metadata.mime || [];
             if (!FS.checkAcceptMime(file.mime, check)) {
-                OSjs.error(this.__label, a._('ERR_FILE_APP_OPEN'), a._('ERR_FILE_APP_OPEN_FMT', file.path, file.mime));
+                OSjs.error(this.__label, Locales._('ERR_FILE_APP_OPEN'), Locales._('ERR_FILE_APP_OPEN_FMT', file.path, file.mime));
                 return false;
             }
             win._toggleLoading(true);
@@ -21212,7 +21278,7 @@ define('skylark-osjsv2-client/helpers/default-application',[
                 win.updateFile(file);
                 return true;
             }).catch(error => {
-                OSjs.error(this.__label, a._('ERR_FILE_APP_SAVE'), a._('ERR_FILE_APP_SAVE_ALT_FMT', file.path, error));
+                OSjs.error(this.__label, Locales._('ERR_FILE_APP_SAVE'), Locales._('ERR_FILE_APP_SAVE_ALT_FMT', file.path, error));
             }).finally(() => {
                 win._toggleLoading(false);
             });

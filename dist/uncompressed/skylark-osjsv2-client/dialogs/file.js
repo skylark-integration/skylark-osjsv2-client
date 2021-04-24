@@ -9,14 +9,14 @@ define([
     '../vfs/fs',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, GUIElement, FileMetadata, SettingsManager, MountManager, FS, Utils, VFS, a, b) {
+], function (DialogWindow, GUIElement, FileMetadata, SettingsManager, MountManager, FS, Utils, VFS, Locales, Config) {
     'use strict';
     return class FileDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {
                 file: null,
                 type: 'open',
-                path: b.getDefaultPath(),
+                path: Config.getDefaultPath(),
                 filename: '',
                 filetypes: [],
                 extension: '',
@@ -40,7 +40,7 @@ define([
                     args.mime = setTo.mime;
                 }
             }
-            const title = args.title || a._(args.type === 'save' ? 'DIALOG_FILE_SAVE' : 'DIALOG_FILE_OPEN');
+            const title = args.title || Locales._(args.type === 'save' ? 'DIALOG_FILE_SAVE' : 'DIALOG_FILE_OPEN');
             const icon = args.type === 'open' ? 'actions/document-open.png' : 'actions/documentsave-as.png';
             super('FileDialog', {
                 title: title,
@@ -82,7 +82,7 @@ define([
             filename.set('value', this.args.filename || '');
             this._find('ButtonMkdir').on('click', () => {
                 DialogWindow.create('Input', {
-                    message: a._('DIALOG_FILE_MKDIR_MSG', this.path),
+                    message: Locales._('DIALOG_FILE_MKDIR_MSG', this.path),
                     value: 'New folder'
                 }, (ev, btn, value) => {
                     if (btn === 'ok' && value) {
@@ -90,13 +90,13 @@ define([
                         VFS.mkdir(new FileMetadata(path, 'dir')).then(() => {
                             return this.changePath(path);
                         }).catch(err => {
-                            OSjs.error(a._('DIALOG_FILE_ERROR'), a._('ERR_VFSMODULE_MKDIR'), err);
+                            OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('ERR_VFSMODULE_MKDIR'), err);
                         });
                     }
                 }, this);
             });
             home.on('click', () => {
-                const dpath = b.getDefaultPath();
+                const dpath = Config.getDefaultPath();
                 this.changePath(dpath);
             });
             view.on('activate', ev => {
@@ -167,7 +167,7 @@ define([
                 return this.args.mfilter.every(fn => fn(m));
             }).map(m => {
                 return {
-                    label: m.option('title') + (m.isReadOnly() ? Utils.format(' ({0})', a._('LBL_READONLY')) : ''),
+                    label: m.option('title') + (m.isReadOnly() ? Utils.format(' ({0})', Locales._('LBL_READONLY')) : ''),
                     value: m.option('root')
                 };
             });
@@ -245,7 +245,7 @@ define([
             if (this.args.type === 'save') {
                 let check = this.checkFileExtension();
                 if (!this.path || !check.filename) {
-                    OSjs.error(a._('DIALOG_FILE_ERROR'), a._('DIALOG_FILE_MISSING_FILENAME'));
+                    OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('DIALOG_FILE_MISSING_FILENAME'));
                     return false;
                 }
                 this.selected = new FileMetadata(this.path.replace(/^\//, '') + '/' + check.filename, check.mime);
@@ -263,7 +263,7 @@ define([
                                     'yes',
                                     'no'
                                 ],
-                                message: a._('DIALOG_FILE_OVERWRITE', this.selected.filename)
+                                message: Locales._('DIALOG_FILE_OVERWRITE', this.selected.filename)
                             }, (ev, button) => {
                                 this._toggleDisabled(false);
                                 if (button === 'yes' || button === 'ok') {
@@ -280,12 +280,12 @@ define([
                     if (this._destroyed) {
                         return;
                     }
-                    OSjs.error(a._('DIALOG_FILE_ERROR'), a._('DIALOG_FILE_MISSING_FILENAME'));
+                    OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('DIALOG_FILE_MISSING_FILENAME'));
                 });
                 return false;
             } else {
                 if (!this.selected && this.args.select !== 'dir') {
-                    OSjs.error(a._('DIALOG_FILE_ERROR'), a._('DIALOG_FILE_MISSING_SELECTION'));
+                    OSjs.error(Locales._('DIALOG_FILE_ERROR'), Locales._('DIALOG_FILE_MISSING_SELECTION'));
                     return false;
                 }
                 let res = this.selected;

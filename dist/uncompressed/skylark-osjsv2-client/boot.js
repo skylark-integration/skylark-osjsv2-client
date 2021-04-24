@@ -1,7 +1,7 @@
 define([
     './core/init',
     "./utils/pepjs"
-], function (a) {
+], function (Init) {
     'use strict';
     window.OSjs = Object.assign({
         error: (title, message, error, exception, bugreport) => {
@@ -27,8 +27,8 @@ define([
         //return mod && mod.default ? mod.default : mod;
     };
     if (document.readyState !== 'loading') {
-        a.start();
+        Init.start();
     } else {
-        document.addEventListener('DOMContentLoaded', () => a.start());
+        document.addEventListener('DOMContentLoaded', () => Init.start());
     }
 });

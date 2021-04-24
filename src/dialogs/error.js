@@ -2,7 +2,7 @@ define([
     '../core/dialog',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, a, b) {
+], function (DialogWindow, Locales, Config) {
     'use strict';
     return class ErrorDialog extends DialogWindow {
         constructor(args, callback) {
@@ -23,7 +23,7 @@ define([
                 }
             }
             super('ErrorDialog', {
-                title: args.title || a._('DIALOG_ERROR_TITLE'),
+                title: args.title || Locales._('DIALOG_ERROR_TITLE'),
                 icon: 'status/dialog-error.png',
                 width: 400,
                 height: error ? 400 : 200
@@ -47,7 +47,7 @@ define([
                 this._find('ButtonBugReport').on('click', () => {
                     let title = '';
                     let body = [];
-                    if (b.getConfig('BugReporting.options.issue')) {
+                    if (Config.getConfig('BugReporting.options.issue')) {
                         const obj = {};
                         const keys = [
                             'userAgent',
@@ -58,9 +58,9 @@ define([
                         keys.forEach(k => {
                             obj[k] = navigator[k];
                         });
-                        title = b.getConfig('BugReporting.options.title');
+                        title = Config.getConfig('BugReporting.options.title');
                         body = [
-                            '**' + b.getConfig('BugReporting.options.message').replace('%VERSION%', b.getConfig('Version')) + ':**',
+                            '**' + Config.getConfig('BugReporting.options.message').replace('%VERSION%', Config.getConfig('Version')) + ':**',
                             '\n',
                             '> ' + this.args.message,
                             '\n',
@@ -80,7 +80,7 @@ define([
                             body.push('\n## Stack Trace \n```\n' + this.traceMessage + '\n```\n');
                         }
                     }
-                    const url = b.getConfig('BugReporting.url').replace('%TITLE%', encodeURIComponent(title)).replace('%BODY%', encodeURIComponent(body.join('\n')));
+                    const url = Config.getConfig('BugReporting.url').replace('%TITLE%', encodeURIComponent(title)).replace('%BODY%', encodeURIComponent(body.join('\n')));
                     window.open(url);
                 });
             } else {

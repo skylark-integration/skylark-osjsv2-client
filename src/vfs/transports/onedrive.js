@@ -7,7 +7,7 @@ define([
     '../../helpers/windows-live-api',
     '../../utils/fs',
     '../fs'
-], function ( Promise, Transport, FileMetadata, a, b, WindowsLiveAPI, FS, VFS) {
+], function ( Promise, Transport, FileMetadata, Config, Locales, WindowsLiveAPI, FS, VFS) {
     'use strict';
     let _isMounted = false;
     let _mimeCache;
@@ -30,7 +30,7 @@ define([
     }
     function getItemMime(iter) {
         if (!_mimeCache) {
-            _mimeCache = a.getConfig('MIME.mapping', {});
+            _mimeCache = Config.getConfig('MIME.mapping', {});
         }
         let mime = null;
         if (getItemType(iter) !== 'dir') {
@@ -149,7 +149,7 @@ define([
             if (foundId) {
                 callback(false, foundId);
             } else {
-                callback(b._('ONEDRIVE_ERR_RESOLVE'));
+                callback(Locales._('ONEDRIVE_ERR_RESOLVE'));
             }
         });
     }
@@ -237,7 +237,7 @@ define([
                     if (result && result.id) {
                         return resolve(result.id);
                     }
-                    return reject(new Error(b._('ERR_APP_UNKNOWN_ERROR')));
+                    return reject(new Error(Locales._('ERR_APP_UNKNOWN_ERROR')));
                 }).catch(reject);
             });
         }

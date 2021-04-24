@@ -1,7 +1,7 @@
 define([
     '../core/process',
     '../core/locales'
-], function ( Process, a) {
+], function ( Process, Locales) {
     'use strict';
     function createMatch(m, sname) {
         if (typeof m === 'string') {
@@ -31,7 +31,7 @@ define([
                 throw new Error('No transport was defined for mountpoint ' + this.options.name);
             }
             if (!this.options.name) {
-                throw new Error(a._('ERR_VFSMODULE_INVALID_CONFIG_FMT'));
+                throw new Error(Locales._('ERR_VFSMODULE_INVALID_CONFIG_FMT'));
             }
             const sname = this.options.name.replace(/\s/g, '-').toLowerCase();
             const defaults = {
@@ -90,7 +90,7 @@ define([
             if (transport) {
                 return transport.request(method, args, options, this);
             }
-            return Promise.reject(new Error(a._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
+            return Promise.reject(new Error(Locales._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
         }
     };
 });

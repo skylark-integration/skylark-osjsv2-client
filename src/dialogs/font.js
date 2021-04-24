@@ -2,16 +2,16 @@ define([
     '../core/dialog',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, a, b) {
+], function (DialogWindow, Locales, Config) {
     'use strict';
     return class FontDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {
-                fontName: b.getConfig('Fonts.default'),
+                fontName: Config.getConfig('Fonts.default'),
                 fontSize: 12,
                 fontColor: '#000000',
                 backgroundColor: '#ffffff',
-                fonts: b.getConfig('Fonts.list'),
+                fonts: Config.getConfig('Fonts.list'),
                 minSize: 6,
                 maxSize: 30,
                 text: 'The quick brown fox jumps over the lazy dog',
@@ -21,7 +21,7 @@ define([
                 args.unit = '';
             }
             super('FontDialog', {
-                title: args.title || a._('DIALOG_FONT_TITLE'),
+                title: args.title || Locales._('DIALOG_FONT_TITLE'),
                 width: 400,
                 height: 300
             }, args, callback);

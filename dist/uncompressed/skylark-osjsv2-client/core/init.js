@@ -40,7 +40,37 @@ define([
     "../vfs/transports/dropbox"
 
 
-], function (Locales, MountManager, SettingsManager, PackageManager, SearchEngine, Authenticator, WindowManager, DialogWindow, Storage, Process, Theme, Connection, a, b, SplashScreen, Utils, Menu, Notification,Preloader, AlertDialog, ApplicationChooserDialog, ColorDialog, ConfirmDialog, ErrorDialog, FileInfoDialog, FileDialog, FileProgressDialog, FileUploadDialog, FontDialog, InputDialog,
+], function (
+    Locales, 
+    MountManager, 
+    SettingsManager, 
+    PackageManager, 
+    SearchEngine, 
+    Authenticator, 
+    WindowManager, 
+    DialogWindow, 
+    Storage, 
+    Process, 
+    Theme, 
+    Connection, 
+    Hooks, 
+    Config, 
+    SplashScreen, 
+    Utils, 
+    Menu, 
+    Notification,
+    Preloader, 
+    AlertDialog, 
+    ApplicationChooserDialog, 
+    ColorDialog, 
+    ConfirmDialog, 
+    ErrorDialog, 
+    FileInfoDialog, 
+    FileDialog, 
+    FileProgressDialog, 
+    FileUploadDialog, 
+    FontDialog, 
+    InputDialog,
     VFS,
     WebTransport,
     OsjsTransport,
@@ -49,7 +79,8 @@ define([
     WebdavTransport,
     GdriveTransport,
     OnedriveTransport,
-    DropboxTransport) {
+    DropboxTransport
+) {
     'use strict';
 
    const  OSJS_DEBUG = false;
@@ -83,7 +114,7 @@ define([
     let hasShutDown = false;
     function onError(title, message, error, exception, bugreport) {
         bugreport = (() => {
-            if (b.getConfig('BugReporting.enabled')) {
+            if (Config.getConfig('BugReporting.enabled')) {
                 return typeof bugreport === 'undefined' ? false : bugreport ? true : false;
             }
             return false;
@@ -382,7 +413,7 @@ define([
         Locales.init(config.Locale, config.LocaleOptions, config.Languages);
         SplashScreen.watermark(config);
         SplashScreen.show();
-        a.triggerHook('initialize');
+        Hooks.triggerHook('initialize');
         Promise.each([
             initPreloading,
             initHandlers,
@@ -409,7 +440,7 @@ define([
         }).then(() => {
             console.info('Done!');
             window.addEventListener('message', onMessage, false);
-            a.triggerHook('initialized');
+            Hooks.triggerHook('initialized');
             SplashScreen.hide();
             if (!testMode) {
                 Theme.playSound('LOGIN');
@@ -418,7 +449,7 @@ define([
                     wm._fullyLoaded = true;
                 }
                 initSession(config).then(() => {
-                    return a.triggerHook('sessionLoaded');
+                    return Hooks.triggerHook('sessionLoaded');
                 });
             }
             return true;
@@ -448,9 +479,9 @@ define([
         Authenticator.instance.destroy();
         Storage.instance.destroy();
         Connection.instance.destroy();
-        a.triggerHook('shutdown');
+        Hooks.triggerHook('shutdown');
         console.warn('OS.js was shut down!');
-        if (!restart && b.getConfig('ReloadOnShutdown') === true) {
+        if (!restart && Config.getConfig('ReloadOnShutdown') === true) {
             window.location.reload();
         }
     }

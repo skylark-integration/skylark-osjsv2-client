@@ -1,7 +1,7 @@
 define([
     'skylark-axios',
     '../core/locales'
-], function (axios, a) {
+], function (axios, Locales) {
     'use strict';
     return class Transport {
         request(method, args, options, mount) {
@@ -17,7 +17,7 @@ define([
             ];
             if (mount.isReadOnly()) {
                 if (readOnly.indexOf(method) !== -1) {
-                    return Promise.reject(new Error(a._('ERR_VFSMODULE_READONLY')));
+                    return Promise.reject(new Error(Locales._('ERR_VFSMODULE_READONLY')));
                 }
             }
             const newArgs = args.concat([
@@ -27,34 +27,34 @@ define([
             return this[method](...newArgs);
         }
         scandir(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         read(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         write(file, data, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         unlink(src, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         copy(src, dest, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         move(src, dest, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         exists(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         fileinfo(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         mkdir(dir, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         upload(file, dest, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         download(item, options, mount) {
             return new Promise((resolve, reject) => {
@@ -72,22 +72,22 @@ define([
             });
         }
         url(item, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         find(file, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         trash(file, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         untrash(file, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         emptyTrash(options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         freeSpace(root, options, mount) {
-            return Promise.reject(new Error(a._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
     };
 });

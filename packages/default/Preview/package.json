@@ -9,7 +9,7 @@
       "prepare" : {
         "texttojs" : ["html","json","css"],
         "jsxtojs" : false,
-        "es6toamd" : true,
+        "es6toamd" : false,
         "cjstoamd" : false
       }
     }

@@ -7,7 +7,7 @@ define([
     '../file',
     '../../core/config',
     '../../core/locales'
-], function (axios, Connection, FS, Utils, Transport, FileMetadata, a, b) {
+], function (axios, Connection, FS, Utils, Transport, FileMetadata, Config, Locales) {
     'use strict';
     function getTargetPath(item, mount) {
         return item.path.replace(mount.option('match'), '');
@@ -134,7 +134,7 @@ define([
                     Connection.request('curl', copts).then(response => {
                         const code = response.httpCode;
                         if (!response) {
-                            return reject(new Error(b._('ERR_VFS_REMOTEREAD_EMPTY')));
+                            return reject(new Error(Locales._('ERR_VFS_REMOTEREAD_EMPTY')));
                         } else if ([
                                 200,
                                 201,
@@ -143,7 +143,7 @@ define([
                                 205,
                                 207
                             ].indexOf(code) < 0) {
-                            const error = new Error(b._('ERR_VFSMODULE_XHR_ERROR') + ': ' + code);
+                            const error = new Error(Locales._('ERR_VFSMODULE_XHR_ERROR') + ': ' + code);
                             error.httpCode = code;
                             return reject(error);
                         }
@@ -213,7 +213,7 @@ define([
             const moduleOptions = mount.option('options') || {};
             let requestUrl = getTargetUrl(mount, item, moduleOptions);
             if (!moduleOptions.cors) {
-                requestUrl = a.getConfig('Connection.FSURI') + '/read?path=' + encodeURIComponent(requestUrl);
+                requestUrl = Config.getConfig('Connection.FSURI') + '/read?path=' + encodeURIComponent(requestUrl);
             }
             return Promise.resolve(requestUrl);
         }

@@ -14,7 +14,7 @@ define([
     './locales',
     './config',
     '../helpers/window-behaviour'
-], function (DOM, Events, Utils, Keycodes, Theme, Process,   Connection, SettingsManager,  a, b, c) {
+], function (DOM, Events, Utils, Keycodes, Theme, Process,   Connection, SettingsManager,  Locales, Config, WindowBehaviour) {
     'use strict';
     function checkForbiddenKeyCombo(ev) {
         return false;
@@ -141,14 +141,14 @@ define([
 
             Connection.instance.subscribe('online', () => {
                 Notification.create({
-                    title: a._('LBL_INFO'),
-                    message: a._('CONNECTION_RESTORED')
+                    title: Locales._('LBL_INFO'),
+                    message: Locales._('CONNECTION_RESTORED')
                 });
             });
             Connection.instance.subscribe('offline', reconnecting => {
                 Notification.create({
-                    title: a._('LBL_WARNING'),
-                    message: a._(reconnecting ? 'CONNECTION_RESTORE_FAILED' : 'CONNECTION_LOST')
+                    title: Locales._('LBL_WARNING'),
+                    message: Locales._(reconnecting ? 'CONNECTION_RESTORE_FAILED' : 'CONNECTION_LOST')
                 });
             });
 
@@ -204,7 +204,7 @@ define([
             } catch (e) {
                 console.error('WindowManager::addWindow()', '=>', 'Window::init()', e, e.stack);
             }
-            c.createWindowBehaviour(w, this);
+            WindowBehaviour.createWindowBehaviour(w, this);
             this._windows.push(w);
             w._inited();
             //if (focus === true || w instanceof DialogWindow) {
@@ -483,8 +483,8 @@ define([
             return true;
         }
         _onBeforeUnload(ev) {
-            if (b.getConfig('ShowQuitWarning')) {
-                return a._('MSG_SESSION_WARNING');
+            if (Config.getConfig('ShowQuitWarning')) {
+                return Locales._('MSG_SESSION_WARNING');
             }
             return null;
         }
@@ -499,7 +499,7 @@ define([
                 message: message
             };
             console.warn('window::onerror()', arguments);
-            OSjs.error(a._('ERR_JAVASCRIPT_EXCEPTION'), a._('ERR_JAVACSRIPT_EXCEPTION_DESC'), a._('BUGREPORT_MSG'), exception, true);
+            OSjs.error(Locales._('ERR_JAVASCRIPT_EXCEPTION'), Locales._('ERR_JAVACSRIPT_EXCEPTION_DESC'), Locales._('BUGREPORT_MSG'), exception, true);
             return false;
         }
         getDefaultSetting() {

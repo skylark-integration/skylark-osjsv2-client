@@ -3,7 +3,7 @@ define([
     '../utils/gui',
     '../core/locales',
     '../core/package-manager'
-], function (DOM, GUI, a, PackageManager) {
+], function (DOM, GUI, Locales, PackageManager) {
     'use strict';
     let REGISTRY = {};
     function getFocusElement(inst) {
@@ -21,7 +21,7 @@ define([
     }
     function parseDynamic(node, win, args) {
         args = args || {};
-        const translator = args.undefined || a._;
+        const translator = args.undefined || Locales._;
         node.querySelectorAll('*[data-label]').forEach(function (el) {
             const label = translator(el.getAttribute('data-label'));
             el.setAttribute('data-label', label);
@@ -35,7 +35,7 @@ define([
         node.querySelectorAll('gui-button').forEach(function (el) {
             const label = GUI.getValueLabel(el);
             if (label) {
-                el.appendChild(document.createTextNode(a._(label)));
+                el.appendChild(document.createTextNode(Locales._(label)));
             }
         });
         node.querySelectorAll('*[data-icon], *[data-stock-icon]').forEach(function (el) {

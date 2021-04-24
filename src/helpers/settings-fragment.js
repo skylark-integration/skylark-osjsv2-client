@@ -1,4 +1,4 @@
-define(['../utils/misc'], function (a) {
+define(['../utils/misc'], function (Misc) {
     'use strict';
     return class SettingsFragment {
         constructor(obj, poolName, sm) {
@@ -17,7 +17,7 @@ define(['../utils/misc'], function (a) {
         }
         set(key, value, save, triggerWatch) {
             if (key === null) {
-                a.mergeObject(this._settings, value);
+                Misc.mergeObject(this._settings, value);
             } else {
                 if ([
                         'number',
@@ -51,7 +51,7 @@ define(['../utils/misc'], function (a) {
             return nestedSetting;
         }
         mergeDefaults(defaults) {
-            a.mergeObject(this._settings, defaults, { overwrite: false });
+            Misc.mergeObject(this._settings, defaults, { overwrite: false });
             return this;
         }
         instance(key) {

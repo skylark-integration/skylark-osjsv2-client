@@ -2,7 +2,7 @@ define([
     '../helpers/promise-limit',
     '../core/config',
     'skylark-axios'
-], function (promiseLimit, a, axios) {
+], function (promiseLimit, Config, axios) {
     'use strict';
     const getFileType = src => {
         if (src.match(/\.js$/i)) {
@@ -14,7 +14,7 @@ define([
     };
     const getSource = src => {
         if (src && !src.match(/^(\/|file|https?)/)) {
-            return a.getBrowserPath(src);
+            return Config.getBrowserPath(src);
         }
         return src;
     };

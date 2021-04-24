@@ -3,7 +3,7 @@ define([
     '../utils/dom',
     './element',
     '../core/config'
-], function (axios, DOM, GUIElement, a) {
+], function (axios, DOM, GUIElement, Config) {
     'use strict';
     function addChildren(frag, root, before) {
         if (frag) {
@@ -87,7 +87,7 @@ define([
             wrapper.innerHTML = html;
             doc.appendChild(wrapper);
             this.scheme = doc.cloneNode(true);
-            if (a.getConfig('DebugScheme')) {
+            if (Config.getConfig('DebugScheme')) {
                 console.group('Scheme::_load() validation', src);
                 this.scheme.querySelectorAll('*').forEach(node => {
                     const tagName = node.tagName.toLowerCase();
@@ -125,7 +125,7 @@ define([
             console.debug('GUIScheme::load()', this.url);
             let src = this.url;
             if (src.substr(0, 1) !== '/' && !src.match(/^(https?|ftp)/)) {
-                src = a.getBrowserPath(src);
+                src = Config.getBrowserPath(src);
             }
             axios({
                 url: src,

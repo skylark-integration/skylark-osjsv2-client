@@ -1,7 +1,7 @@
 define([
     '../core/dialog',
     '../core/locales'
-], function (DialogWindow, a) {
+], function (DialogWindow, Locales) {
     'use strict';
     return class ConfirmDialog extends DialogWindow {
         constructor(args, callback) {
@@ -13,7 +13,7 @@ define([
                 ]
             }, args);
             super('ConfirmDialog', {
-                title: args.title || a._('DIALOG_CONFIRM_TITLE'),
+                title: args.title || Locales._('DIALOG_CONFIRM_TITLE'),
                 icon: 'status/dialog-question.png',
                 width: 400,
                 height: 100

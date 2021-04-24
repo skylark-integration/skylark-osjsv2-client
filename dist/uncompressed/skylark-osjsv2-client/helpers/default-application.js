@@ -5,7 +5,7 @@ define([
     '../vfs/fs',
     '../utils/fs',
     '../core/locales'
-], function (Application, DialogWindow, FileMetadata, VFS, FS, a) {
+], function (Application, DialogWindow, FileMetadata, VFS, FS, Locales) {
     'use strict';
     return class DefaultApplication extends Application {
         constructor(name, args, metadata, opts) {
@@ -33,7 +33,7 @@ define([
                             'yes',
                             'no'
                         ],
-                        message: a._('MSG_FILE_CHANGED')
+                        message: Locales._('MSG_FILE_CHANGED')
                     }, (ev, button) => {
                         if (button === 'ok' || button === 'yes') {
                             this.openFile(new FileMetadata(args.file), win);
@@ -51,7 +51,7 @@ define([
             }
             const onError = error => {
                 if (error) {
-                    OSjs.error(this.__label, a._('ERR_FILE_APP_OPEN'), a._('ERR_FILE_APP_OPEN_ALT_FMT', file.path, error));
+                    OSjs.error(this.__label, Locales._('ERR_FILE_APP_OPEN'), Locales._('ERR_FILE_APP_OPEN_ALT_FMT', file.path, error));
                     return true;
                 }
                 return false;
@@ -62,7 +62,7 @@ define([
             };
             const check = this.__metadata.mime || [];
             if (!FS.checkAcceptMime(file.mime, check)) {
-                OSjs.error(this.__label, a._('ERR_FILE_APP_OPEN'), a._('ERR_FILE_APP_OPEN_FMT', file.path, file.mime));
+                OSjs.error(this.__label, Locales._('ERR_FILE_APP_OPEN'), Locales._('ERR_FILE_APP_OPEN_FMT', file.path, file.mime));
                 return false;
             }
             win._toggleLoading(true);
@@ -90,7 +90,7 @@ define([
                 win.updateFile(file);
                 return true;
             }).catch(error => {
-                OSjs.error(this.__label, a._('ERR_FILE_APP_SAVE'), a._('ERR_FILE_APP_SAVE_ALT_FMT', file.path, error));
+                OSjs.error(this.__label, Locales._('ERR_FILE_APP_SAVE'), Locales._('ERR_FILE_APP_SAVE_ALT_FMT', file.path, error));
             }).finally(() => {
                 win._toggleLoading(false);
             });

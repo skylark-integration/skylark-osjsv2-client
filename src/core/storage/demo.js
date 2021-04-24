@@ -1,11 +1,11 @@
 define([
     '../config',
     '../storage'
-], function (a, Storage) {
+], function (Config, Storage) {
     'use strict';
     return class DemoStorage extends Storage {
         init() {
-            const curr = a.getConfig('Version');
+            const curr = Config.getConfig('Version');
             const version = localStorage.getItem('__version__');
             if (curr !== version) {
                 localStorage.clear();

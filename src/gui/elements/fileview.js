@@ -15,7 +15,24 @@ define([
     '../../core/theme',
     '../../core/locales',
     '../../core/config'
-], function (FS, VFS, DOM, GUI, Utils, Events, Menu, GUIElement, GUIDataView, PackageManager, SettingsManager, FileMetadata, DateExtended, Theme, a, b) {
+], function (
+    FS, 
+    VFS, 
+    DOM, 
+    GUI, 
+    Utils, 
+    Events, 
+    Menu, 
+    GUIElement, 
+    GUIDataView, 
+    PackageManager, 
+    SettingsManager, 
+    FileMetadata, 
+    DateExtended, 
+    Theme, 
+    Locales, 
+    Config
+) {
     'use strict';
     let _iconSizes = { 'gui-icon-view': '32x32' };
     function getFileIcon(iter, size) {
@@ -39,7 +56,7 @@ define([
         let mimeConfig;
         return (str, opts) => {
             if (!mimeConfig) {
-                mimeConfig = b.getConfig('MIME.mapping');
+                mimeConfig = Config.getConfig('MIME.mapping');
             }
             if (opts.extensions === false) {
                 let ext = FS.filext(str);
@@ -146,7 +163,7 @@ define([
                 columns.push({
                     sortBy: key,
                     sortDir: key === sortBy ? sortDir : null,
-                    label: a._(map.label),
+                    label: Locales._(map.label),
                     size: map.size || '',
                     resizable: idx > 0,
                     textalign: idx === 0 ? 'left' : 'right'
@@ -374,7 +391,7 @@ define([
             }
             Menu.create([
                 {
-                    title: a._('LBL_SHOW_HIDDENFILES'),
+                    title: Locales._('LBL_SHOW_HIDDENFILES'),
                     type: 'checkbox',
                     checked: scandirOptions.showHiddenFiles === true,
                     onClick: () => {
@@ -382,7 +399,7 @@ define([
                     }
                 },
                 {
-                    title: a._('LBL_SHOW_FILEEXTENSIONS'),
+                    title: Locales._('LBL_SHOW_FILEEXTENSIONS'),
                     type: 'checkbox',
                     checked: scandirOptions.showFileExtensions === true,
                     onClick: () => {
@@ -398,14 +415,14 @@ define([
             }
             const cb = args.done || function () {
             };
-            const dir = args.path || b.getDefaultPath();
+            const dir = args.path || Config.getDefaultPath();
             const child = childView;
             const el = this.$element;
             clearTimeout(el._readdirTimeout);
             el._readdirTimeout = setTimeout(() => {
                 readdir(this, dir, (error, result, summary) => {
                     if (error) {
-                        OSjs.error(a._('ERR_VFSMODULE_XHR_ERROR'), a._('ERR_VFSMODULE_SCANDIR_FMT', dir), error);
+                        OSjs.error(Locales._('ERR_VFSMODULE_XHR_ERROR'), Locales._('ERR_VFSMODULE_SCANDIR_FMT', dir), error);
                     } else {
                         child.clear();
                         child.add(result);

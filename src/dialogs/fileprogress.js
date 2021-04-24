@@ -1,13 +1,13 @@
 define([
     '../core/dialog',
     '../core/locales'
-], function (DialogWindow, a) {
+], function (DialogWindow, Locales) {
     'use strict';
     return class FileProgressDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('FileProgressDialog', {
-                title: args.title || a._('DIALOG_FILEPROGRESS_TITLE'),
+                title: args.title || Locales._('DIALOG_FILEPROGRESS_TITLE'),
                 icon: 'actions/document-send.png',
                 width: 400,
                 height: 100

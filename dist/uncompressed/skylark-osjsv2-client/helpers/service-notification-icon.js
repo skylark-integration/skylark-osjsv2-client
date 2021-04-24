@@ -3,7 +3,7 @@ define([
     '../core/theme',
     '../gui/menu',
     '../core/locales'
-], function (Notification, Theme, Menu, a) {
+], function (Notification, Theme, Menu, Locales) {
     'use strict';
     class ServiceNotificationIcon {
         constructor() {
@@ -37,7 +37,7 @@ define([
                 if (this.notif.$container) {
                     this.notif.$container.style.display = this.size ? 'inline-block' : 'none';
                 }
-                this.notif.setTitle(a._('SERVICENOTIFICATION_TOOLTIP', this.size.toString()));
+                this.notif.setTitle(Locales._('SERVICENOTIFICATION_TOOLTIP', this.size.toString()));
             }
         }
         displayMenu(ev) {

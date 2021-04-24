@@ -4,7 +4,7 @@ define([
     '../utils/preloader',
     '../core/locales',
     '../core/config'
-], function (MountManager, ServiceNotificationIcon, Preloader, a, b) {
+], function (MountManager, ServiceNotificationIcon, Preloader, Locales, Config) {
     'use strict';
     const redirectURI = window.location.href.replace(/\/$/, '') + '/windows-live-oauth.html';
     let SingletonInstance = null;
@@ -63,7 +63,7 @@ define([
                     return;
                 }
                 if (!window.WL) {
-                    callback(a._('WLAPI_LOAD_FAILURE'));
+                    callback(Locales._('WLAPI_LOAD_FAILURE'));
                     return;
                 }
                 WL = window.WL || {};
@@ -97,7 +97,7 @@ define([
                         } else if (result.status === 'success') {
                             _login();
                         } else {
-                            callback(a._('WLAPI_INIT_FAILED_FMT', result.status.toString()));
+                            callback(Locales._('WLAPI_INIT_FAILED_FMT', result.status.toString()));
                         }
                     }, result => {
                         console.error('WindowsLiveAPI::load()', 'init() error', result);
@@ -138,10 +138,10 @@ define([
                 if (result.status === 'connected') {
                     callback(false, true);
                 } else {
-                    callback(a._('WLAPI_LOGIN_FAILED'));
+                    callback(Locales._('WLAPI_LOGIN_FAILED'));
                 }
             }, result => {
-                callback(a._('WLAPI_LOGIN_FAILED_FMT', result.error_description));
+                callback(Locales._('WLAPI_LOGIN_FAILED_FMT', result.error_description));
             });
         }
         onSessionChange() {
@@ -158,7 +158,7 @@ define([
             console.warn('WindowsLiveAPI::onLogin()', arguments);
             this.hasSession = true;
             ServiceNotificationIcon.add('Windows Live API', [{
-                    title: a._('WLAPI_SIGN_OUT'),
+                    title: Locales._('WLAPI_SIGN_OUT'),
                     onClick: () => {
                         this.logout();
                     }
@@ -190,12 +190,12 @@ define([
         }
         let clientId = null;
         try {
-            clientId = b.getConfig('WindowsLiveAPI.ClientId');
+            clientId = Config.getConfig('WindowsLiveAPI.ClientId');
         } catch (e) {
             console.warn('getWindowsLiveAPI()', e, e.stack);
         }
         if (!clientId) {
-            callback(a._('WLAPI_DISABLED'));
+            callback(Locales._('WLAPI_DISABLED'));
             return;
         }
         SingletonInstance = new WindowsLiveAPI(clientId);

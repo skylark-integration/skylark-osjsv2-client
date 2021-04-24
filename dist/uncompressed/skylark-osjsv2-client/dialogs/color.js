@@ -3,7 +3,7 @@ define([
     '../utils/misc',
     '../utils/colors',
     '../core/locales'
-], function (DialogWindow, Utils, Colors, a) {
+], function (DialogWindow, Utils, Colors, Locales) {
     'use strict';
     function getColor(rgb) {
         let hex = rgb;
@@ -37,7 +37,7 @@ define([
             args = Object.assign({}, {}, args);
             const [rgb, hex] = getColor(args.color);
             super('ColorDialog', {
-                title: args.title || a._('DIALOG_COLOR_TITLE'),
+                title: args.title || Locales._('DIALOG_COLOR_TITLE'),
                 icon: 'apps/preferences-desktop-theme.png',
                 width: 400,
                 height: rgb.a !== null ? 300 : 220
@@ -53,10 +53,10 @@ define([
         init() {
             const root = super.init(...arguments);
             const updateHex = update => {
-                this._find('LabelRed').set('value', a._('DIALOG_COLOR_R', this.color.r));
-                this._find('LabelGreen').set('value', a._('DIALOG_COLOR_G', this.color.g));
-                this._find('LabelBlue').set('value', a._('DIALOG_COLOR_B', this.color.b));
-                this._find('LabelAlpha').set('value', a._('DIALOG_COLOR_A', this.color.a));
+                this._find('LabelRed').set('value', Locales._('DIALOG_COLOR_R', this.color.r));
+                this._find('LabelGreen').set('value', Locales._('DIALOG_COLOR_G', this.color.g));
+                this._find('LabelBlue').set('value', Locales._('DIALOG_COLOR_B', this.color.b));
+                this._find('LabelAlpha').set('value', Locales._('DIALOG_COLOR_A', this.color.a));
                 if (update) {
                     this.color.hex = Colors.convertToHEX(this.color.r, this.color.g, this.color.b);
                 }

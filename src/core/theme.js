@@ -6,7 +6,7 @@ define([
     '../utils/fs',
     '../utils/compability',
     '../utils/dom'
-], function (SettingsManager, a, FileMetadata, PackageManager, FS, Compability, DOM) {
+], function (SettingsManager, Config, FileMetadata, PackageManager, FS, Compability, DOM) {
     'use strict';
     class Theme {
         constructor() {
@@ -89,11 +89,11 @@ define([
             document.body.setAttribute('data-background-style', className);
         }
         getThemeCSS(name) {
-            let root = a.getConfig('Connection.RootURI', '/');
+            let root = Config.getConfig('Connection.RootURI', '/');
             if (name === null) {
                 return root + 'blank.css';
             }
-            root = a.getConfig('Connection.ThemeURI');
+            root = Config.getConfig('Connection.ThemeURI');
             return root + '/' + name + '.css';
         }
         setTheme(settings) {
@@ -154,7 +154,7 @@ define([
         getThemeResource(name, type) {
             name = name || null;
             type = type || null;
-            const root = a.getConfig('Connection.ThemeURI');
+            const root = Config.getConfig('Connection.ThemeURI');
             function getName(str, theme) {
                 if (!str.match(/^\//)) {
                     if (type === 'base' || type === null) {
@@ -175,7 +175,7 @@ define([
             name = name || null;
             if (name && !name.match(/^(https?:)?\//)) {
                 const theme = this.getSoundTheme();
-                const root = a.getConfig('Connection.SoundURI');
+                const root = Config.getConfig('Connection.SoundURI');
                 const ext = this.oggAvailable ? 'oga' : 'mp3';
                 name = `${ root }/${ theme }/${ name }.${ ext }`;
             }
@@ -192,16 +192,20 @@ define([
             }
             const f = this.getSound(filename);
             console.debug('playSound()', name, filename, f, volume);
-            const a = new Audio(f);
-            a.volume = volume;
-            a.play();
-            return a;
+            const audio = new Audio(f);
+            audio.volume = volume;
+            try {
+                audio.play();
+            } catch (e) {
+                console.error(e);
+            }
+            return audio;
         }
         getIcon(name, size) {
             name = name || '';
             size = size || '16x16';
             if (!name.match(/^(https:?)?\//)) {
-                const root = a.getConfig('Connection.IconURI');
+                const root = Config.getConfig('Connection.IconURI');
                 const theme = this.getIconTheme();
                 name = `${ root }/${ theme }/${ size }/${ name }`;
             }
@@ -322,13 +326,13 @@ define([
             return sounds[k] || null;
         }
         getStyleThemes() {
-            return a.getConfig('Styles', []);
+            return Config.getConfig('Styles', []);
         }
         getSoundThemes() {
-            return a.getConfig('Sounds', []);
+            return Config.getConfig('Sounds', []);
         }
         getIconThemes() {
-            return a.getConfig('Icons', []);
+            return Config.getConfig('Icons', []);
         }
     }
     return new Theme();

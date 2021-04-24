@@ -12,7 +12,21 @@ define([
     '../utils/preloader',
     './settings-manager',
     './package-manager'
-], function (Connection, EventHandler, Theme, FS, Config, Compability, locales, hooks, Loader, FileMetadata, Preloader, SettingsManager, PackageManager) {
+], function (
+    Connection, 
+    EventHandler, 
+    Theme, 
+    FS, 
+    Config, 
+    Compability, 
+    locales, 
+    hooks, 
+    Loader, 
+    FileMetadata, 
+    Preloader, 
+    SettingsManager, 
+    PackageManager
+) {
     'use strict';
     let alreadyLaunching = [];
     let runningProcesses = [];

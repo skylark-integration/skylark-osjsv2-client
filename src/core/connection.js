@@ -3,7 +3,7 @@ define([
     '../helpers/event-handler',
     '../helpers/loader',
     './config'
-], function (axios, EventHandler, Loader, a) {
+], function (axios, EventHandler, Loader, Config) {
     'use strict';
     function progressHandler(ev, onprogress) {
         if (ev.lengthComputable) {
@@ -63,12 +63,12 @@ define([
         }
         getVFSPath(item, options) {
             options = options || {};
-            const base = a.getConfig('Connection.RootURI', '/').replace(/\/?$/, '/');
-            const defaultDist = a.getConfig('VFS.Dist');
+            const base = Config.getConfig('Connection.RootURI', '/').replace(/\/?$/, '/');
+            const defaultDist = Config.getConfig('VFS.Dist');
             if (window.location.protocol === 'file:') {
                 return item ? base + item.path.substr(defaultDist.length) : base;
             }
-            let url = a.getConfig('Connection.FSURI', '/');
+            let url = Config.getConfig('Connection.FSURI', '/');
             if (item) {
                 url += '/read';
                 options.path = item.path;
@@ -131,7 +131,7 @@ define([
             let raw = true;
             let requestOptions = {
                 responseType: 'json',
-                url: a.getConfig('Connection.APIURI') + '/' + realMethod,
+                url: Config.getConfig('Connection.APIURI') + '/' + realMethod,
                 method: 'POST',
                 data: args
             };
@@ -144,7 +144,7 @@ define([
                 } else if (realMethod === 'upload') {
                     requestOptions.url = this.getVFSPath();
                 } else {
-                    requestOptions.url = a.getConfig('Connection.FSURI') + '/' + realMethod;
+                    requestOptions.url = Config.getConfig('Connection.FSURI') + '/' + realMethod;
                 }
             }
             return {

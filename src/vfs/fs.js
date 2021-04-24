@@ -8,7 +8,7 @@ define([
     '../core/settings-manager',
     '../core/connection',
     '../core/locales'
-], function (FS, FileMetadata, FileDataURL, Process, MountManager, PackageManager, SettingsManager, Connection, a) {
+], function (FS, FileMetadata, FileDataURL, Process, MountManager, PackageManager, SettingsManager, Connection, Locales) {
     'use strict';
     let watches = [];
     function noop(err, res) {
@@ -36,7 +36,7 @@ define([
             item = new FileMetadata(item);
         }
         if (!(item instanceof FileMetadata)) {
-            throw new TypeError(err || a._('ERR_VFS_EXPECT_FILE'));
+            throw new TypeError(err || Locales._('ERR_VFS_EXPECT_FILE'));
         }
         const alias = hasAlias(item);
         if (alias) {
@@ -44,10 +44,10 @@ define([
         }
         const mountpoint = MountManager.getModuleFromPath(item.path);
         if (!mountpoint) {
-            throw new Error(a._('ERR_VFSMODULE_NOT_FOUND_FMT', item.path));
+            throw new Error(Locales._('ERR_VFSMODULE_NOT_FOUND_FMT', item.path));
         }
         if (checkRo && mountpoint.isReadOnly()) {
-            throw new Error(a._('ERR_VFSMODULE_READONLY_FMT', mountpoint.name));
+            throw new Error(Locales._('ERR_VFSMODULE_READONLY_FMT', mountpoint.name));
         }
         return item;
     }
@@ -70,7 +70,7 @@ define([
         return new Promise((resolve, reject) => {
             exists(item).then(result => {
                 if (result) {
-                    return reject(new Error(a._('ERR_VFS_FILE_EXISTS')));
+                    return reject(new Error(Locales._('ERR_VFS_FILE_EXISTS')));
                 }
                 return resolve();
             }).catch(error => {
@@ -171,7 +171,7 @@ define([
     function requestWrapper(mountpoint, method, args, options, appRef) {
         console.info('VFS operation', ...arguments);
         if (!mountpoint) {
-            return Promise.reject(new Error(a._('ERR_VFSMODULE_INVALID')));
+            return Promise.reject(new Error(Locales._('ERR_VFSMODULE_INVALID')));
         }
         return new Promise((resolve, reject) => {
             mountpoint.request(method, args, options).then(response => {
@@ -182,12 +182,12 @@ define([
     function performRequest(method, args, options, test, appRef, errorStr) {
         return new Promise((resolve, reject) => {
             if (options && !(options instanceof Object)) {
-                reject(new TypeError(a._('ERR_ARGUMENT_FMT', 'VFS::' + method, 'options', 'Object', typeof options)));
+                reject(new TypeError(Locales._('ERR_ARGUMENT_FMT', 'VFS::' + method, 'options', 'Object', typeof options)));
                 return;
             }
             const mountpoint = MountManager.getModuleFromPath(test);
             if (!mountpoint) {
-                reject(new Error(a._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
+                reject(new Error(Locales._('ERR_VFSMODULE_NOT_FOUND_FMT', test)));
                 return;
             }
             requestWrapper(mountpoint, method, args, options, appRef).then(resolve).catch(reject);
@@ -233,7 +233,7 @@ define([
     function find(item, args, options) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -249,7 +249,7 @@ define([
         const vfsSettings = SettingsManager.get('VFS');
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         const oitem = new FileMetadata(item);
         const alias = hasAlias(oitem, true);
@@ -289,7 +289,7 @@ define([
     function write(item, data, options, appRef) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item, null, true);
@@ -303,18 +303,18 @@ define([
                     item,
                     ab
                 ], options, appRef).then(resolve).catch(e => {
-                    reject(new Error(a._('ERR_VFSMODULE_WRITE_FMT', e)));
+                    reject(new Error(Locales._('ERR_VFSMODULE_WRITE_FMT', e)));
                 });
                 return true;
             }).catch(e => {
-                reject(new Error(a._('ERR_VFSMODULE_WRITE_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_WRITE_FMT', e)));
             });
         });
     }
     function read(item, options) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -362,18 +362,18 @@ define([
                 }
                 return resolve(response);
             }).catch(e => {
-                reject(new Error(a._('ERR_VFSMODULE_READ_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_READ_FMT', e)));
             });
         });
     }
     function copy(src, dest, options, appRef) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
-            src = checkMetadataArgument(src, a._('ERR_VFS_EXPECT_SRC_FILE'));
-            dest = checkMetadataArgument(dest, a._('ERR_VFS_EXPECT_DST_FILE'), true);
+            src = checkMetadataArgument(src, Locales._('ERR_VFS_EXPECT_SRC_FILE'));
+            dest = checkMetadataArgument(dest, Locales._('ERR_VFS_EXPECT_DST_FILE'), true);
         } catch (e) {
             return Promise.reject(e);
         }
@@ -417,18 +417,18 @@ define([
         return new Promise((resolve, reject) => {
             promise.then(resolve).catch(e => {
                 dialogProgress(100);
-                reject(new Error(a._('ERR_VFSMODULE_COPY_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_COPY_FMT', e)));
             });
         });
     }
     function move(src, dest, options, appRef) {
         options = options || {};
         if (arguments.length < 2) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
-            src = checkMetadataArgument(src, a._('ERR_VFS_EXPECT_SRC_FILE'));
-            dest = checkMetadataArgument(dest, a._('ERR_VFS_EXPECT_DST_FILE'), true);
+            src = checkMetadataArgument(src, Locales._('ERR_VFS_EXPECT_SRC_FILE'));
+            dest = checkMetadataArgument(dest, Locales._('ERR_VFS_EXPECT_DST_FILE'), true);
         } catch (e) {
             return Promise.reject(e);
         }
@@ -469,7 +469,7 @@ define([
         return new Promise((resolve, reject) => {
             promise.then(resolve).catch(e => {
                 dialogProgress(100);
-                reject(new Error(a._('ERR_VFSMODULE_MOVE_FMT', e)));
+                reject(new Error(Locales._('ERR_VFSMODULE_MOVE_FMT', e)));
             });
         });
     }
@@ -479,7 +479,7 @@ define([
     function unlink(item, options, appRef) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item, null, true);
@@ -505,7 +505,7 @@ define([
     function mkdir(item, options, appRef) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item, null, true);
@@ -516,7 +516,7 @@ define([
     }
     function exists(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -527,7 +527,7 @@ define([
     }
     function fileinfo(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -539,7 +539,7 @@ define([
     function url(item, options) {
         options = options || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -551,13 +551,13 @@ define([
     function upload(args, options, appRef) {
         args = args || {};
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         if (!args.files) {
-            return Promise.reject(new Error(a._('ERR_VFS_UPLOAD_NO_FILES')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UPLOAD_NO_FILES')));
         }
         if (!args.destination) {
-            return Promise.reject(new Error(a._('ERR_VFS_UPLOAD_NO_DEST')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UPLOAD_NO_DEST')));
         }
         const dest = new FileMetadata(args.destination);
         const mountpoint = MountManager.getModuleFromPath(args.destination);
@@ -574,13 +574,13 @@ define([
                     }).catch(reject);
                 });
             })).then(resolve).catch(e => {
-                reject(new Error(a._('ERR_VFS_UPLOAD_FAIL_FMT', e)));
+                reject(new Error(Locales._('ERR_VFS_UPLOAD_FAIL_FMT', e)));
             });
         });
     }
     function download(file) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             file = checkMetadataArgument(file);
@@ -588,7 +588,7 @@ define([
             return Promise.reject(e);
         }
         if (!file.path) {
-            return Promise.reject(new Error(a._('ERR_VFS_DOWNLOAD_NO_FILE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_DOWNLOAD_NO_FILE')));
         }
         const promise = new Promise((resolve, reject) => {
             const mountpoint = MountManager.getModuleFromPath(file);
@@ -603,13 +603,13 @@ define([
         });
         return new Promise((resolve, reject) => {
             promise.then(resolve).catch(e => {
-                reject(new Error(a._('ERR_VFS_DOWNLOAD_FAILED', e)));
+                reject(new Error(Locales._('ERR_VFS_DOWNLOAD_FAILED', e)));
             });
         });
     }
     function trash(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -620,7 +620,7 @@ define([
     }
     function untrash(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -634,7 +634,7 @@ define([
     }
     function freeSpace(item) {
         if (arguments.length < 1) {
-            return Promise.reject(new Error(a._('ERR_VFS_NUM_ARGS')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_NUM_ARGS')));
         }
         try {
             item = checkMetadataArgument(item);
@@ -647,7 +647,7 @@ define([
     function watch(item, callback) {
         callback = callback || noop;
         if (arguments.length < 2) {
-            callback(a._('ERR_VFS_NUM_ARGS'));
+            callback(Locales._('ERR_VFS_NUM_ARGS'));
             return -1;
         }
         try {

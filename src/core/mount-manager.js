@@ -2,7 +2,7 @@ define([
     '../vfs/mountpoint',
     './locales',
     './config'
-], function (Mountpoint, a, b) {
+], function (Mountpoint, Locales, Config) {
     'use strict';
 
     class MountManager {
@@ -17,7 +17,7 @@ define([
             }
             this.transports = loadTransports();
             this.inited = true;
-            const config = b.getConfig('VFS.Mountpoints', {});
+            const config = Config.getConfig('VFS.Mountpoints', {});
             const enabled = Object.keys(config).filter(name => {
                 return config[name].enabled !== false;
             });
@@ -59,7 +59,7 @@ define([
                     return false;
                 });
                 if (found.length) {
-                    return Promise.reject(new Error(a._('ERR_VFSMODULE_ALREADY_MOUNTED_FMT', point.option('name'))));
+                    return Promise.reject(new Error(Locales._('ERR_VFSMODULE_ALREADY_MOUNTED_FMT', point.option('name'))));
                 }
                 this.mountpoints.push(point);
             } catch (e) {
@@ -89,7 +89,7 @@ define([
                     }).catch(reject);
                 });
             }
-            return Promise.reject(new Error(a._('ERR_VFSMODULE_NOT_MOUNTED_FMT', moduleName)));
+            return Promise.reject(new Error(Locales._('ERR_VFSMODULE_NOT_MOUNTED_FMT', moduleName)));
         }
         getModules(filter) {
             filter = Object.assign({}, {

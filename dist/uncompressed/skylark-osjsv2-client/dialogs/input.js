@@ -1,13 +1,13 @@
 define([
     '../core/dialog',
     '../core/locales'
-], function (DialogWindow, a) {
+], function (DialogWindow, Locales) {
     'use strict';
     return class InputDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {}, args);
             super('InputDialog', {
-                title: args.title || a._('DIALOG_INPUT_TITLE'),
+                title: args.title || Locales._('DIALOG_INPUT_TITLE'),
                 icon: 'status/dialog-information.png',
                 width: 400,
                 height: 120

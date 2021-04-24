@@ -6,7 +6,7 @@ define([
     '../../utils/misc',
     '../../core/locales',
     '../../utils/fs'
-], function (Transport, Preloader, a, FileMetadata, b, c, FS) {
+], function (Transport, Preloader, Config, FileMetadata, b, Locales, FS) {
     'use strict';
     const AUTH_TIMEOUT = 1000 * 30;
     const MAX_RESULTS = 100;
@@ -27,7 +27,7 @@ define([
                         this.loaded = true;
                         return resolve(true);
                     }
-                    return reject(new Error(c._('ERR_DROPBOX_API')));
+                    return reject(new Error(Locales._('ERR_DROPBOX_API')));
                 }).catch(err => {
                     this.loaded = true;
                     return reject(err);
@@ -55,21 +55,21 @@ define([
                         this.dbx = new window.Dropbox({ accessToken: params.access_token });
                         resolve(true);
                     } else {
-                        reject(new Error(c._('ERR_DROPBOX_AUTH')));
+                        reject(new Error(Locales._('ERR_DROPBOX_AUTH')));
                     }
                 };
                 const authUrl = this.dbx.getAuthenticationUrl(redirectUrl);
                 loginTimeout = setTimeout(() => {
                     timedOut = true;
-                    reject(new Error(c._('ERR_DROPBOX_AUTH')));
+                    reject(new Error(Locales._('ERR_DROPBOX_AUTH')));
                 }, AUTH_TIMEOUT);
                 window.open(authUrl);
             });
         }
         _init() {
-            const clientId = a.getConfig('DropboxAPI.ClientKey');
+            const clientId = Config.getConfig('DropboxAPI.ClientKey');
             if (!clientId) {
-                return Promise.reject(new Error(c._('ERR_DROPBOX_KEY')));
+                return Promise.reject(new Error(Locales._('ERR_DROPBOX_KEY')));
             }
             return new Promise((resolve, reject) => {
                 this._loadDependencies().then(() => {

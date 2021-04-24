@@ -7,7 +7,7 @@ define([
     '../gui/scheme',
     './locales',
     "../dialogs.html"
-], function (a, Keycodes, Window, Application, WindowManager, GUIScheme, b,dialogsHtml) {
+], function (Dom, Keycodes, Window, Application, WindowManager, GUIScheme, Locales,dialogsHtml) {
     'use strict';
     return class DialogWindow extends Window {
         constructor(className, opts, args, callback) {
@@ -69,8 +69,8 @@ define([
                     node.querySelectorAll('gui-label').forEach(el => {
                         if (el.childNodes.length && el.childNodes[0].nodeType === 3 && el.childNodes[0].nodeValue) {
                             const label = el.childNodes[0].nodeValue;
-                            a.$empty(el);
-                            el.appendChild(document.createTextNode(b._(label)));
+                            Dom.$empty(el);
+                            el.appendChild(document.createTextNode(Locales._(label)));
                         }
                     });
                 });
@@ -87,7 +87,7 @@ define([
                     btn.focus();
                 }
             });
-            a.$addClass(root, 'DialogWindow');
+            Dom.$addClass(root, 'DialogWindow');
             return root;
         }
         onClose(ev, button) {
@@ -106,7 +106,7 @@ define([
             }
         }
         static parseMessage(msg) {
-            msg = a.$escape(msg || '').replace(/\*\*(.*)\*\*/g, '<span>$1</span>');
+            msg = Dom.$escape(msg || '').replace(/\*\*(.*)\*\*/g, '<span>$1</span>');
             let tmp = document.createElement('div');
             tmp.innerHTML = msg;
             const frag = document.createDocumentFragment();

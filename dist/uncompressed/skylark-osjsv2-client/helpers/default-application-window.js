@@ -3,7 +3,7 @@ define([
     '../core/window',
     '../core/dialog',
     '../core/locales'
-], function (FileMetadata, Window, DialogWindow, a) {
+], function (FileMetadata, Window, DialogWindow, Locales) {
     'use strict';
     return class DefaultApplicationWindow extends Window {
         constructor(name, args, app, file) {
@@ -88,7 +88,7 @@ define([
                         'yes',
                         'no'
                     ],
-                    message: a._('MSG_GENERIC_APP_DISCARD')
+                    message: Locales._('MSG_GENERIC_APP_DISCARD')
                 }, function (ev, button) {
                     cb(button === 'ok' || button === 'yes');
                 }, {

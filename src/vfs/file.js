@@ -2,12 +2,12 @@ define([
     '../utils/fs',
     '../core/config',
     '../core/locales'
-], function (FS, a, b) {
+], function (FS, Config, Locales) {
     'use strict';
     return class FileMetadata {
         constructor(arg, mime) {
             if (!arg) {
-                throw new Error(b._('ERR_VFS_FILE_ARGS'));
+                throw new Error(Locales._('ERR_VFS_FILE_ARGS'));
             }
             this.path = null;
             this.filename = null;
@@ -58,7 +58,7 @@ define([
                 return;
             }
             const ext = FS.filext(this.path);
-            this.mime = a.getConfig('MIME.mapping')['.' + ext] || 'application/octet-stream';
+            this.mime = Config.getConfig('MIME.mapping')['.' + ext] || 'application/octet-stream';
         }
         static fromUpload(destination, f) {
             return new FileMetadata({

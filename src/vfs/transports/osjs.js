@@ -5,7 +5,7 @@ define([
     '../transport',
     '../../core/config',
     '../../core/locales'
-], function (FileMetadata, FS, Connection, Transport, a, b) {
+], function (FileMetadata, FS, Connection, Transport, Config, Locales) {
     'use strict';
     return class OSjsTransport extends Transport {
         _request(method, args, options) {
@@ -15,11 +15,11 @@ define([
             options = options || {};
             dest = dest instanceof FileMetadata ? dest.path : dest;
             if (typeof file.size !== 'undefined') {
-                const maxSize = a.getConfig('VFS.MaxUploadSize');
+                const maxSize = Config.getConfig('VFS.MaxUploadSize');
                 if (maxSize > 0) {
                     const bytes = file.size;
                     if (bytes > maxSize) {
-                        const msg = b._('DIALOG_UPLOAD_TOO_BIG_FMT', FS.humanFileSize(maxSize));
+                        const msg = Locales._('DIALOG_UPLOAD_TOO_BIG_FMT', FS.humanFileSize(maxSize));
                         return Promise.reject(new Error(msg));
                     }
                 }
@@ -106,13 +106,13 @@ define([
             });
         }
         trash(file) {
-            return Promise.reject(new Error(b._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         untrash(file) {
-            return Promise.reject(new Error(b._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         emptyTrash() {
-            return Promise.reject(new Error(b._('ERR_VFS_UNAVAILABLE')));
+            return Promise.reject(new Error(Locales._('ERR_VFS_UNAVAILABLE')));
         }
         freeSpace(root) {
             return this._request('freeSpace', { root: root });

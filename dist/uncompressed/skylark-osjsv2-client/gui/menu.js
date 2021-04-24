@@ -5,7 +5,7 @@ define([
     './element',
     '../core/window-manager',
     '../helpers/hooks'
-], function (GUI, DOM, Events, GUIElement, WindowManager, a) {
+], function (GUI, DOM, Events, GUIElement, WindowManager, Hooks) {
     'use strict';
     let lastMenu;
     function clickWrapper(ev, pos, onclick, original) {
@@ -66,7 +66,7 @@ define([
             lastMenu(ev);
         }
         lastMenu = null;
-        a.triggerHook('menuBlur');
+        Hooks.triggerHook('menuBlur');
     }
     function create(items, ev, customInstance) {
         items = items || [];

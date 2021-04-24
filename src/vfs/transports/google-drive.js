@@ -7,7 +7,7 @@ define([
     '../../core/locales',
     '../../helpers/google-api',
     '../../utils/fs'
-], function (axios, Transport, FileMetadata, FileDataURL, MountManager, a, GoogleAPI, FS) {
+], function (axios, Transport, FileMetadata, FileDataURL, MountManager, Locales, GoogleAPI, FS) {
     'use strict';
     const CACHE_CLEAR_TIMEOUT = 7000;
     let gapi = window.gapi = window.gapi || {};
@@ -192,7 +192,7 @@ define([
             const request = gapi.client.drive.about.get();
             request.execute(resp => {
                 if (!resp || !resp.rootFolderId) {
-                    callback(a._('ERR_VFSMODULE_ROOT_ID'));
+                    callback(Locales._('ERR_VFSMODULE_ROOT_ID'));
                     return;
                 }
                 _rootFolderId = resp.rootFolderId;
@@ -365,10 +365,10 @@ define([
                         }).then(response => {
                             return resolve(response.data);
                         }).catch(error => {
-                            reject(new Error(a._('ERR_VFSMODULE_XHR_ERROR') + ' - ' + error.message));
+                            reject(new Error(Locales._('ERR_VFSMODULE_XHR_ERROR') + ' - ' + error.message));
                         });
                     } else {
-                        reject(new Error(a._('ERR_VFSMODULE_NOSUCH')));
+                        reject(new Error(Locales._('ERR_VFSMODULE_NOSUCH')));
                     }
                 });
             });
@@ -380,7 +380,7 @@ define([
                         if (error) {
                             reject(new Error(error));
                         } else if (!response) {
-                            reject(new Error(a._('ERR_VFSMODULE_NOSUCH')));
+                            reject(new Error(Locales._('ERR_VFSMODULE_NOSUCH')));
                         } else {
                             read(response).then(resolve).catch(reject);
                         }
@@ -418,7 +418,7 @@ define([
                                     resolve(true);
                                 }
                             } else {
-                                reject(a._('ERR_VFSMODULE_NOSUCH'));
+                                reject(Locales._('ERR_VFSMODULE_NOSUCH'));
                             }
                         });
                     }
@@ -460,7 +460,7 @@ define([
                             }
                         });
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -477,7 +477,7 @@ define([
                         _treeCache = null;
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -521,7 +521,7 @@ define([
                         });
                         resolve(info);
                     } else {
-                        reject(a._('ERR_VFSMODULE_NOSUCH'));
+                        reject(Locales._('ERR_VFSMODULE_NOSUCH'));
                     }
                 });
             });
@@ -536,7 +536,7 @@ define([
                         if (resp && resp.webContentLink) {
                             resolve(resp.webContentLink);
                         } else {
-                            const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                            const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                             reject(new Error(msg));
                         }
                     });
@@ -559,7 +559,7 @@ define([
                         _treeCache = null;
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -571,7 +571,7 @@ define([
                 if (dirDest !== rootDest) {
                     getParentPathId(dir, (error, id) => {
                         if (error || !id) {
-                            reject(new Error(a._('ERR_VFSMODULE_PARENT_FMT', error || a._('ERR_VFSMODULE_PARENT'))));
+                            reject(new Error(Locales._('ERR_VFSMODULE_PARENT_FMT', error || Locales._('ERR_VFSMODULE_PARENT'))));
                         } else {
                             mkdir([{ id: id }]).then(resolve).catch(reject);
                         }
@@ -597,7 +597,7 @@ define([
                     if (resp.id) {
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -610,7 +610,7 @@ define([
                     if (resp.id) {
                         resolve(true);
                     } else {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     }
                 });
@@ -621,7 +621,7 @@ define([
                 const request = gapi.client.drive.files.emptyTrash({});
                 request.execute(resp => {
                     if (resp && resp.message) {
-                        const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                        const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                         reject(new Error(msg));
                     } else {
                         resolve(true);
@@ -641,7 +641,7 @@ define([
                         if (resp && typeof resp.result === 'object') {
                             resolve(true);
                         } else {
-                            const msg = resp && resp.message ? resp.message : a._('ERR_APP_UNKNOWN_ERROR');
+                            const msg = resp && resp.message ? resp.message : Locales._('ERR_APP_UNKNOWN_ERROR');
                             reject(new Error(msg));
                         }
                     });
@@ -653,7 +653,7 @@ define([
                         if (error) {
                             reject(new Error(error));
                         } else if (!response) {
-                            reject(new Error(a._('ERR_VFSMODULE_NOSUCH')));
+                            reject(new Error(Locales._('ERR_VFSMODULE_NOSUCH')));
                         } else {
                             unlink(response).then(resolve).catch(reject);
                         }

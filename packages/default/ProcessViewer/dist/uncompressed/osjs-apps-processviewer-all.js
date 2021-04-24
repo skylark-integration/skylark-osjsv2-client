@@ -75,7 +75,7 @@
   factory(define,require);
 
   if (!isAmd) {
-    var skylarkjs = require("skylark-langx/skylark");
+    var skylarkjs = require("skylark-langx-ns");
 
     if (isCmd) {
       module.exports = skylarkjs;
@@ -86,37 +86,10 @@
 
 })(function(define,require) {
 
-/*!
- * OS.js - JavaScript Cloud/Web Desktop Platform
- *
- * Copyright (c) 2011-2017, Anders Evenrud <andersevenrud@gmail.com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * @author  Anders Evenrud <andersevenrud@gmail.com>
- * @licence Simplified BSD License
- */
-
-/*eslint valid-jsdoc: "off"*/
+define('osjs-apps-processviewer/scheme.html',[], function() { return "<application-window data-id=\"ProcessViewerWindow\">\r\n\r\n  <gui-vbox>\r\n    <gui-vbox-container data-grow=\"1\" data-fill=\"true\">\r\n      <gui-list-view data-id=\"View\" data-multiple=\"false\">\r\n      </gui-list-view>\r\n    </gui-vbox-container>\r\n\r\n    <gui-vbox-container data-shrink=\"1\" data-align=\"end\">\r\n      <gui-button-bar>\r\n        <gui-button data-id=\"ButtonKill\">LBL_KILL</gui-button>\r\n      </gui-button-bar>\r\n    </gui-vbox-container>\r\n  </gui-vbox>\r\n\r\n</application-window>\r\n"; });
+define('osjs-apps-processviewer/main',[
+    "./scheme.html"
+], function (schemeHtml) {
 
 const Window = OSjs.require('core/window');
 const Application = OSjs.require('core/application');
@@ -138,7 +111,7 @@ class ApplicationProcessViewerWindow extends Window {
     const root = super.init(...arguments);
 
     // Load and set up scheme (GUI) here
-    this._render('ProcessViewerWindow', require('osjs-scheme-loader!scheme.html'));
+    this._render('ProcessViewerWindow', schemeHtml);
 
     var view = this._find('View');
 
@@ -209,9 +182,9 @@ class ApplicationProcessViewer extends Application {
 
 OSjs.Applications.ApplicationProcessViewer = ApplicationProcessViewer;
 
+});
 define('osjs-apps-processviewer', ['osjs-apps-processviewer/main'], function (main) { return main; });
-
-define("osjs-apps-processviewer/main", function(){});
 
 
 },this);
+//# sourceMappingURL=sourcemaps/osjs-apps-processviewer-all.js.map

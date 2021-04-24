@@ -5,7 +5,7 @@ define([
     '../core/locales',
     '../core/config',
     './then-jsonp'
-], function (MountManager, ServiceNotificationIcon, Preloader, a, b, jsonp) {
+], function (MountManager, ServiceNotificationIcon, Preloader, Locales, b, jsonp) {
     'use strict';
     const gapi = window.gapi = window.gapi || {};
     let SingletonInstance = null;
@@ -45,7 +45,7 @@ define([
                         cb(error);
                     } else {
                         if (!this.authenticated) {
-                            cb(a._('GAPI_AUTH_FAILURE'));
+                            cb(Locales._('GAPI_AUTH_FAILURE'));
                             return;
                         }
                         cb(false, result);
@@ -102,7 +102,7 @@ define([
                     return;
                 }
                 if (!window.gapi || !gapi.load) {
-                    callback(a._('GAPI_LOAD_FAILURE'));
+                    callback(Locales._('GAPI_LOAD_FAILURE'));
                     return;
                 }
                 auth(error => {
@@ -171,13 +171,13 @@ define([
                 ServiceNotificationIcon.remove('Google API');
                 ServiceNotificationIcon.add('Google API', [
                     {
-                        title: a._('GAPI_SIGN_OUT'),
+                        title: Locales._('GAPI_SIGN_OUT'),
                         onClick: () => {
                             this.signOut();
                         }
                     },
                     {
-                        title: a._('GAPI_REVOKE'),
+                        title: Locales._('GAPI_REVOKE'),
                         onClick: () => {
                             this.revoke(() => {
                                 this.signOut();
@@ -190,7 +190,7 @@ define([
                 console.info('GoogleAPI::authenticate() => handleAuthResult()', authResult);
                 if (authResult.error) {
                     if (authResult.error_subtype === 'origin_mismatch' || authResult.error_subtype === 'access_denied' && !immediate) {
-                        const msg = a._('GAPI_AUTH_FAILURE_FMT', authResult.error, authResult.error_subtype);
+                        const msg = Locales._('GAPI_AUTH_FAILURE_FMT', authResult.error, authResult.error_subtype);
                         callback(msg);
                         return;
                     }
@@ -215,7 +215,7 @@ define([
             };
             gapi.load('auth:client', result => {
                 if (result && result.error) {
-                    const msg = a._('GAPI_AUTH_FAILURE_FMT', result.error, result.error_subtype);
+                    const msg = Locales._('GAPI_AUTH_FAILURE_FMT', result.error, result.error_subtype);
                     callback(msg);
                     return;
                 }
@@ -246,7 +246,7 @@ define([
             console.warn('getGoogleAPI()', e, e.stack);
         }
         if (!clientId) {
-            callback(a._('GAPI_DISABLED'));
+            callback(Locales._('GAPI_DISABLED'));
             return;
         }
         SingletonInstance = new GoogleAPI(clientId);

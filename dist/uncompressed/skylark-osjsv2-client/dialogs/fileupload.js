@@ -3,12 +3,12 @@ define([
     '../vfs/fs',
     '../core/locales',
     '../core/config'
-], function (DialogWindow, VFS, a, b) {
+], function (DialogWindow, VFS, Locales, Config) {
     'use strict';
     return class FileUploadDialog extends DialogWindow {
         constructor(args, callback) {
             args = Object.assign({}, {
-                dest: b.getDefaultPath(),
+                dest: Config.getDefaultPath(),
                 progress: {},
                 file: null
             }, args);
@@ -16,10 +16,10 @@ define([
                 args.dest = args.destination;
             }
             if (!args.dest) {
-                args.dest = b.getDefaultPath();
+                args.dest = Config.getDefaultPath();
             }
             super('FileUploadDialog', {
-                title: args.title || a._('DIALOG_UPLOAD_TITLE'),
+                title: args.title || Locales._('DIALOG_UPLOAD_TITLE'),
                 icon: 'actions/document-new.png',
                 width: 400,
                 height: 100
@@ -28,8 +28,8 @@ define([
         init() {
             const root = super.init(...arguments);
             const message = this._find('Message');
-            const maxSize = b.getConfig('VFS.MaxUploadSize');
-            message.set('value', a._('DIALOG_UPLOAD_DESC', this.args.dest, maxSize), true);
+            const maxSize = Config.getConfig('VFS.MaxUploadSize');
+            message.set('value', Locales._('DIALOG_UPLOAD_DESC', this.args.dest, maxSize), true);
             const input = this._find('File');
             if (this.args.file) {
                 this.setFile(this.args.file, input);
@@ -43,7 +43,7 @@ define([
         setFile(file, input) {
             let progressDialog;
             const error = (msg, ev) => {
-                OSjs.error(a._('DIALOG_UPLOAD_FAILED'), a._('DIALOG_UPLOAD_FAILED_MSG'), msg || a._('DIALOG_UPLOAD_FAILED_UNKNOWN'));
+                OSjs.error(Locales._('DIALOG_UPLOAD_FAILED'), Locales._('DIALOG_UPLOAD_FAILED_MSG'), msg || Locales._('DIALOG_UPLOAD_FAILED_UNKNOWN'));
                 progressDialog._close(true);
                 this.onClose(ev, 'cancel');
             };
@@ -58,7 +58,7 @@ define([
                     input.set('disabled', true);
                 }
                 this._find('ButtonCancel').set('disabled', true);
-                const desc = a._('DIALOG_UPLOAD_MSG_FMT', file.name, file.type, fileSize, this.args.dest);
+                const desc = Locales._('DIALOG_UPLOAD_MSG_FMT', file.name, file.type, fileSize, this.args.dest);
                 progressDialog = DialogWindow.create('FileProgress', {
                     message: desc,
                     dest: this.args.dest,

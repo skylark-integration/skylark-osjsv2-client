@@ -4,13 +4,13 @@ define([
     '../../vfs/fs',
     '../../vfs/file',
     '../connection'
-], function (a, b, VFS, FileMetadata, Connection) {
+], function (Config, Locales, VFS, FileMetadata, Connection) {
     'use strict';
     return class WSConnection extends Connection {
         constructor() {
             super(...arguments);
-            const port = a.getConfig('Connection.WSPort');
-            const path = a.getConfig('Connection.WSPath') || '';
+            const port = Config.getConfig('Connection.WSPort');
+            const path = Config.getConfig('Connection.WSPath') || '';
             let url = window.location.protocol.replace('http', 'ws') + '//' + window.location.host;
             if (port !== 'upgrade') {
                 if (url.match(/:\d+$/)) {
@@ -70,7 +70,7 @@ define([
             this.ws.onclose = ev => {
                 console.debug('websocket close', ev);
                 if (!connected && ev.code !== 3001) {
-                    callback(b._('CONNECTION_ERROR'));
+                    callback(Locales._('CONNECTION_ERROR'));
                     return;
                 }
                 this._onclose();
