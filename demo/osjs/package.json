@@ -47,7 +47,7 @@
     "glob": "^7.1.2",
     "glob-promise": "^3.3.0",
     "http-proxy": "^1.16.2",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.6",
     "morgan": "^1.9.0",
     "osjs-scheme-loader": "^1.0.9",
     "request": "^2.83.0",
